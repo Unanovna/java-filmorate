@@ -61,7 +61,7 @@ public class FilmController {
 
     @SuppressWarnings("checkstyle:WhitespaceAround")
     public void validate(Film film) {
-        if (film.getDescription().length() > 200) {
+        if(film.getDescription().length() > 200) {
             log.trace("максимальная длина описания — 200 символов");
             throw new ValidateException("максимальная длина описания — 200 символов");
         }
