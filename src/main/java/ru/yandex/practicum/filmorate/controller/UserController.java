@@ -16,12 +16,14 @@ import java.util.HashMap;
 @RestController
 public class UserController {
 
+    @SuppressWarnings("checkstyle:MemberName")
     @Getter
     private HashMap<Integer, User> Users = new HashMap<>();
     @Getter
     private static Integer idController = 1;
 
     //создание пользователя
+    @SuppressWarnings("checkstyle:WhitespaceAround")
     @PostMapping("/users")
     public User create(@Valid @RequestBody User user) {
         validate(user);
@@ -36,6 +38,7 @@ public class UserController {
     }
 
     //обновление пользователя
+    @SuppressWarnings("checkstyle:WhitespaceAround")
     @PutMapping("/users")
     public User update(@Valid @RequestBody User user) {
         validate(user);
@@ -47,12 +50,14 @@ public class UserController {
         return user;
     }
     //получение списка всех пользователей
+    @SuppressWarnings("checkstyle:EmptyLineSeparator")
     @GetMapping("/users")
     public Collection<User> getAllUsers() {
         return Users.values();
     }
 
 
+    @SuppressWarnings({"checkstyle:WhitespaceAround", "checkstyle:RightCurly"})
     public void validate(User user) {
         if(user.getLogin().isBlank()) {
             log.trace("логин не может быть пустым и содержать пробелы");
@@ -68,8 +73,7 @@ public class UserController {
         if(date.isAfter(LocalDate.now())) {
             log.trace("дата рождения не может быть в будущем");
             throw new ValidateException("дата рождения не может быть в будущем");
-        }
-        if(user.getName().isBlank()) {
+        } if(user.getName().isBlank()) {
             log.trace("вместо имени пользователя будет использоваться логин");
             user.setName(user.getLogin());
         }

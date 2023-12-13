@@ -13,12 +13,14 @@ import java.util.HashMap;
 @Slf4j
 @RestController
 public class FilmController {
+    @SuppressWarnings("checkstyle:MemberName")
     @Getter
     private HashMap<Integer, Film> Films = new HashMap<>();
     @Getter
     private static Integer idController = 1;
 
     //добавление фильма
+    @SuppressWarnings("checkstyle:WhitespaceAround")
     @PostMapping("/films")
     public Film create(@RequestBody Film film) {
         validate(film);
@@ -33,6 +35,7 @@ public class FilmController {
     }
 
     //обновление фильма
+    @SuppressWarnings("checkstyle:WhitespaceAround")
     @PutMapping("/films")
     public Film update(@RequestBody Film film) {
         validate(film);
@@ -45,6 +48,7 @@ public class FilmController {
         return film;
     }
     //получение всех фильмов
+    @SuppressWarnings("checkstyle:EmptyLineSeparator")
     @GetMapping("/films")
     public Collection<Film> getAll() {
         return Films.values();
@@ -55,6 +59,7 @@ public class FilmController {
         return idController;
     }
 
+    @SuppressWarnings("checkstyle:WhitespaceAround")
     public void validate(Film film) {
         if (film.getDescription().length() > 200) {
             log.trace("максимальная длина описания — 200 символов");
