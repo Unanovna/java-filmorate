@@ -1,7 +1,71 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.web.bind.annotation.RestController;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.model.Film;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+
+@Slf4j
 @RestController
 public class FilmController {
+    @Getter
+    private HashMap<Integer, Film> Films = new HashMap<>();
+    @Getter
+    private static Integer idController = 1;
+
+    //добавление фильма
+    @PostMapping("/films")
+    public Film create(@RequestBody Film film) {
+        validate(film);
+        film.setId(idController);
+        if(Films.containsValue(film)) {
+            log.trace("Данный Фильм уже содержится в рейтинге");
+            throw new ValidateException("Данный Фильм уже содержится в рейтинге");
+        }
+        Films.put(film.getId(), film);
+        generateId();
+        return film;
+    }
+
+    //обновление фильма
+    @PutMapping("/films")
+    public Film update(@RequestBody Film film) {
+        validate(film);
+        if(Films.containsKey(film.getId())) {
+            Films.put(film.getId(), film);
+        } else {
+            log.trace("Обновление невозможно - фильм с указанным id " + film.getId() + " отсутствует в рейтинге");
+            throw new ValidateException("Обновление невозможно - фильм с указанным id " + film.getId() + " отсутствует в рейтинге");
+        }
+        return film;
+    }
+    //получение всех фильмов
+    @GetMapping("/films")
+    public Collection<Film> getAll() {
+        return Films.values();
+    }
+
+    public Integer generateId() {
+        idController =  Films.size() + 1;
+        return idController;
+    }
+
+    public void validate(Film film) {
+        if (film.getDescription().length() > 200) {
+            log.trace("максимальная длина описания — 200 символов");
+            throw new ValidateException("максимальная длина описания — 200 символов");
+        }
+        String dateToString = String.valueOf(film.getReleaseDate());
+        String [] split = dateToString.split("-");
+        Date date = new Date(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
+        if(date.before(new Date(1895, 12, 25))) {
+            log.trace("дата релиза — не раньше 28 декабря 1985");
+            throw new ValidateException("дата релиза — не раньше 28 декабря 1985");
+        }
+    }
 }
