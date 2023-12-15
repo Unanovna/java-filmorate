@@ -39,7 +39,7 @@ public class FilmController {
     @PutMapping("/films")
     public Film update(@RequestBody Film film) {
         validate(film);
-        if(Films.containsKey(film.getId())) {
+        if (Films.containsKey(film.getId())) {
             Films.put(film.getId(), film);
         } else {
             log.trace("Обновление невозможно - фильм с указанным id " + film.getId() + " отсутствует в рейтинге");
@@ -61,14 +61,14 @@ public class FilmController {
 
     @SuppressWarnings("checkstyle:WhitespaceAround")
     public void validate(Film film) {
-        if(film.getDescription().length() > 200) {
+        if (film.getDescription().length() > 200) {
             log.trace("максимальная длина описания — 200 символов");
             throw new ValidateException("максимальная длина описания — 200 символов");
         }
         String dateToString = String.valueOf(film.getReleaseDate());
         String [] split = dateToString.split("-");
         Date date = new Date(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-        if(date.before(new Date(1895, 12, 25))) {
+        if (date.before(new Date(1895, 12, 25))) {
             log.trace("дата релиза — не раньше 28 декабря 1985");
             throw new ValidateException("дата релиза — не раньше 28 декабря 1985");
         }
