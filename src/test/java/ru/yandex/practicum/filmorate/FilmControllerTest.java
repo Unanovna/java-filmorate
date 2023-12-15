@@ -1,12 +1,12 @@
 package ru.yandex.practicum.filmorate;
 
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
-
-import static org.junit.Assert.assertThrows;
 
 public class FilmControllerTest {
 
@@ -14,7 +14,7 @@ public class FilmControllerTest {
     public void shouldThrowException() {
         FilmController controller = new FilmController();
         Film film1 = new Film("film1", "ds f1", "1500-6-5", 120L);
-        final ValidateException exp1 = assertThrows(
+        final ValidateException exp1 = Assert.assertThrows(
                 ValidateException.class,
                 () -> controller.validate(film1)
         );
@@ -22,7 +22,7 @@ public class FilmControllerTest {
         Film film2 = new Film("film2", " Пока родители борются за выживание в меняющемся на глазах мире, дети" +
                 " сбиваются в стаи и «бьются за асфальт»." +
                 " Два 14-летних парня, Андрей и Марат, ищут защиты и поддержки среди насилия и нищеты и находят ее на улице.", "2000-6-5", 120L);
-        final ValidateException exp2 = assertThrows(
+        final ValidateException exp2 = Assert.assertThrows(
                 ValidateException.class,
                 () -> controller.validate(film2)
         );
