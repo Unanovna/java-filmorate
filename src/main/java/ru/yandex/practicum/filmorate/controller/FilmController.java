@@ -47,7 +47,7 @@ public class FilmController {
         }
         return film;
     }
-    //получение всех фильмов
+    
     @SuppressWarnings("checkstyle:EmptyLineSeparator")
     @GetMapping("/films")
     public Collection<Film> getAll() {
