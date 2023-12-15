@@ -25,7 +25,7 @@ public class FilmController {
     public Film create(@RequestBody Film film) {
         validate(film);
         film.setId(idController);
-        if(Films.containsValue(film)) {
+        if (Films.containsValue(film)) {
             log.trace("Данный Фильм уже содержится в рейтинге");
             throw new ValidateException("Данный Фильм уже содержится в рейтинге");
         }
