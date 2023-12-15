@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 
+@SuppressWarnings("checkstyle:Regexp")
 @Slf4j
 @RestController
 public class FilmController {
@@ -47,6 +48,7 @@ public class FilmController {
         }
         return film;
     }
+
     @SuppressWarnings("checkstyle:EmptyLineSeparator")
     @GetMapping("/films")
     public Collection<Film> getAll() {
