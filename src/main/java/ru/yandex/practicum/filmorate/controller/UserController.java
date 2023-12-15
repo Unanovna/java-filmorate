@@ -18,7 +18,7 @@ public class UserController {
 
     @SuppressWarnings("checkstyle:MemberName")
     @Getter
-    private HashMap<Integer, User> Users = new HashMap<>();
+    private HashMap<Integer, User> users = new HashMap<>();
     @Getter
     private static Integer idController = 1;
 
@@ -28,11 +28,11 @@ public class UserController {
     public User create(@Valid @RequestBody User user) {
         validate(user);
         user.setId(idController);
-        if (Users.containsValue(user)) {
+        if (users.containsValue(user)) {
             log.trace("Данный пользователь уже добавлен в систему");
             throw new ValidateException("Данный пользователь уже добавлен в систему");
         }
-        Users.put(user.getId(), user);
+        users.put(user.getId(), user);
         generateId();
         return user;
     }
@@ -42,18 +42,19 @@ public class UserController {
     @PutMapping("/users")
     public User update(@Valid @RequestBody User user) {
         validate(user);
-        if (!Users.containsKey(user.getId())) {
+        if (!users.containsKey(user.getId())) {
             log.trace("Обновление невозможно - пользователь с указанным id " + user.getId() + " отсутствует в системе");
             throw new ValidateException("Обновление невозможно - пользователь с указанным id " + user.getId() + " отсутствует в системе");
         }
-        Users.put(user.getId(), user);
+        users.put(user.getId(), user);
         return user;
     }
+
     //получение списка всех пользователей
     @SuppressWarnings("checkstyle:EmptyLineSeparator")
     @GetMapping("/users")
     public Collection<User> getAllUsers() {
-        return Users.values();
+        return users.values();
     }
 
 
@@ -73,7 +74,8 @@ public class UserController {
         if (date.isAfter(LocalDate.now())) {
             log.trace("дата рождения не может быть в будущем");
             throw new ValidateException("дата рождения не может быть в будущем");
-        } if (user.getName().isBlank()) {
+        } 
+        if (user.getName().isBlank()) {
             log.trace("вместо имени пользователя будет использоваться логин");
             user.setName(user.getLogin());
         }
