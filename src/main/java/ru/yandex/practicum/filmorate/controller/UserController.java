@@ -74,7 +74,7 @@ public class UserController {
         if (date.isAfter(LocalDate.now())) {
             log.trace("дата рождения не может быть в будущем");
             throw new ValidateException("дата рождения не может быть в будущем");
-        } 
+        }
         if (user.getName().isBlank()) {
             log.trace("вместо имени пользователя будет использоваться логин");
             user.setName(user.getLogin());
