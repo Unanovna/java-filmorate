@@ -15,7 +15,7 @@ import java.util.HashMap;
 public class FilmController {
     @SuppressWarnings("checkstyle:MemberName")
     @Getter
-    private HashMap<Integer, Film> Films = new HashMap<>();
+    private HashMap<Integer, Film> films = new HashMap<>();
     @Getter
     private static Integer idController = 1;
 
@@ -25,11 +25,11 @@ public class FilmController {
     public Film create(@RequestBody Film film) {
         validate(film);
         film.setId(idController);
-        if (Films.containsValue(film)) {
+        if (films.containsValue(film)) {
             log.trace("Данный Фильм уже содержится в рейтинге");
             throw new ValidateException("Данный Фильм уже содержится в рейтинге");
         }
-        Films.put(film.getId(), film);
+        films.put(film.getId(), film);
         generateId();
         return film;
     }
@@ -39,8 +39,8 @@ public class FilmController {
     @PutMapping("/films")
     public Film update(@RequestBody Film film) {
         validate(film);
-        if (Films.containsKey(film.getId())) {
-            Films.put(film.getId(), film);
+        if (films.containsKey(film.getId())) {
+            films.put(film.getId(), film);
         } else {
             log.trace("Обновление невозможно - фильм с указанным id " + film.getId() + " отсутствует в рейтинге");
             throw new ValidateException("Обновление невозможно - фильм с указанным id " + film.getId() + " отсутствует в рейтинге");
@@ -51,11 +51,11 @@ public class FilmController {
     @SuppressWarnings("checkstyle:EmptyLineSeparator")
     @GetMapping("/films")
     public Collection<Film> getAll() {
-        return Films.values();
+        return films.values();
     }
 
     public Integer generateId() {
-        idController =  Films.size() + 1;
+        idController =  films.size() + 1;
         return idController;
     }
 
