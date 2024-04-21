@@ -25,6 +25,7 @@ public class UserController {
     public User create(@Valid @RequestBody User user) {
         validate(user);
         user.setId(idController);
+        idController++;
         if (users.containsValue(user)) {
             log.trace("Данный пользователь уже добавлен в систему");
             throw new ValidateException("Данный пользователь уже добавлен в систему");
