@@ -71,15 +71,10 @@ public class UserController {
             log.trace("дата рождения не может быть в будущем");
             throw new ValidateException("дата рождения не может быть в будущем");
         }
-        if (user.getName().isBlank()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             log.trace("вместо имени пользователя будет использоваться логин");
             user.setName(user.getLogin());
         }
-        if (user.getName() == "null") {
-            log.trace("вместо имени пользователя будет использоваться логин");
-            user.setName(user.getLogin());
-        }
-
     }
 
     public Integer generateId() {
