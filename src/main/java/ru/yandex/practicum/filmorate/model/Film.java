@@ -19,6 +19,11 @@ public class Film {
     private LocalDate releaseDate;
     private Integer duration;
 
-    public Film(String film2, String s, String date, long l) {
+    public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
     }
 }

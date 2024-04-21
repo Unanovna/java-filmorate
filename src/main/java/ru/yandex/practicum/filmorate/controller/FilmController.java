@@ -6,8 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 
 @SuppressWarnings("checkstyle:Regexp")
@@ -49,26 +50,34 @@ public class FilmController {
 
     @GetMapping("/films")
     public Collection<Film> getAll() {
-        return films.values();
+        return new ArrayList<>(films.values());
     }
 
     public Integer generateId() {
-        idController =  films.size() + 1;
+        idController = films.size() + 1;
         return idController;
     }
 
-    @SuppressWarnings("checkstyle:WhitespaceAround")
     public void validate(Film film) {
+        if (film.getDuration() == null || film.getDuration() < 0) {
+            log.trace("Продолжительность должна быть положительной");
+            throw new ValidateException("Продолжительность должна быть положительной");
+        }
+        if (film.getName() == null || film.getName().isBlank()) {
+            log.trace("Имя фильма не может быть пустым");
+            throw new ValidateException("Имя фильма не может быть пустым");
+        }
         if (film.getDescription().length() > 200) {
             log.trace("максимальная длина описания — 200 символов");
             throw new ValidateException("максимальная длина описания — 200 символов");
         }
-        String dateToString = String.valueOf(film.getReleaseDate());
-        String [] split = dateToString.split("-");
-        Date date = new Date(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-        if (date.before(new Date(1895, 12, 25))) {
-            log.trace("дата релиза — не раньше 28 декабря 1985");
-            throw new ValidateException("дата релиза — не раньше 28 декабря 1985");
+        if (film.getReleaseDate() == null) {
+            log.trace("Дата релиза должна быть заполнена");
+            throw new ValidateException("Дата релиза должна быть заполнена");
+        }
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            log.trace("дата релиза — не раньше 28 декабря 1895");
+            throw new ValidateException("дата релиза — не раньше 28 декабря 1895");
         }
     }
 }

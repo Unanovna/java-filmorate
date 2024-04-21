@@ -25,7 +25,6 @@ public class UserController {
     public User create(@Valid @RequestBody User user) {
         validate(user);
         user.setId(idController);
-        idController++;
         if (users.containsValue(user)) {
             log.trace("Данный пользователь уже добавлен в систему");
             throw new ValidateException("Данный пользователь уже добавлен в систему");
@@ -52,7 +51,15 @@ public class UserController {
     }
 
     public void validate(User user) {
-        if (user.getLogin().isBlank()) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            log.trace("email не может быть пустым");
+            throw new ValidateException("email не может быть пустым");
+        }
+        if (!user.getEmail().contains("@")) {
+            log.trace("email должен содержать символ @");
+            throw new ValidateException("email должен содержать символ @");
+        }
+        if (user.getLogin() == null || user.getLogin().isBlank()) {
             log.trace("логин не может быть пустым и содержать пробелы");
             throw new ValidateException("логин не может быть пустым и содержать пробелы");
         }
@@ -60,10 +67,7 @@ public class UserController {
             log.trace("логин не может быть пустым и содержать пробелы");
             throw new ValidateException("логин не может быть пустым и содержать пробелы");
         }
-        String dateToString = String.valueOf(user.getBirthday());
-        String [] split = dateToString.split("-");
-        LocalDate date = LocalDate.of(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
-        if (date.isAfter(LocalDate.now())) {
+        if (user.getBirthday() != null && user.getBirthday().isAfter(LocalDate.now())) {
             log.trace("дата рождения не может быть в будущем");
             throw new ValidateException("дата рождения не может быть в будущем");
         }

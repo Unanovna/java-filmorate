@@ -15,7 +15,4 @@ public class User {
     private String email;
     private String login;
     private LocalDate birthday;
-
-    public User(String mail, String space, String date) {
-    }
 }
