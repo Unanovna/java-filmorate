@@ -16,14 +16,11 @@ import java.util.HashMap;
 @RestController
 public class UserController {
 
-    @SuppressWarnings("checkstyle:MemberName")
     @Getter
     private HashMap<Integer, User> users = new HashMap<>();
     @Getter
     private static Integer idController = 1;
 
-    //создание пользователя
-    @SuppressWarnings("checkstyle:WhitespaceAround")
     @PostMapping("/users")
     public User create(@Valid @RequestBody User user) {
         validate(user);
@@ -37,8 +34,6 @@ public class UserController {
         return user;
     }
 
-    //обновление пользователя
-    @SuppressWarnings("checkstyle:WhitespaceAround")
     @PutMapping("/users")
     public User update(@Valid @RequestBody User user) {
         validate(user);
@@ -50,15 +45,11 @@ public class UserController {
         return user;
     }
 
-    //получение списка всех пользователей
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
     @GetMapping("/users")
     public Collection<User> getAllUsers() {
         return users.values();
     }
 
-
-    @SuppressWarnings({"checkstyle:WhitespaceAround", "checkstyle:RightCurly"})
     public void validate(User user) {
         if (user.getLogin().isBlank()) {
             log.trace("логин не может быть пустым и содержать пробелы");
@@ -87,7 +78,6 @@ public class UserController {
     }
 
     public Integer generateId() {
-        idController++;
-        return idController;
+        return ++idController;
     }
 }

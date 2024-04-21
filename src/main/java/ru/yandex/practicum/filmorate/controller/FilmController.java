@@ -20,7 +20,6 @@ public class FilmController {
     @Getter
     private static Integer idController = 1;
 
-    //добавление фильма
     @SuppressWarnings("checkstyle:WhitespaceAround")
     @PostMapping("/films")
     public Film create(@RequestBody Film film) {
@@ -35,7 +34,6 @@ public class FilmController {
         return film;
     }
 
-    //обновление фильма
     @SuppressWarnings("checkstyle:WhitespaceAround")
     @PutMapping("/films")
     public Film update(@RequestBody Film film) {
@@ -49,7 +47,6 @@ public class FilmController {
         return film;
     }
 
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
     @GetMapping("/films")
     public Collection<Film> getAll() {
         return films.values();
