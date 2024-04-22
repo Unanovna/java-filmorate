@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("checkstyle:Regexp")
 @Slf4j
@@ -17,7 +18,7 @@ import java.util.HashMap;
 public class FilmController {
     @SuppressWarnings("checkstyle:MemberName")
     @Getter
-    private HashMap<Integer, Film> films = new HashMap<>();
+    Map<Integer, Film> films = new HashMap<>();
     @Getter
     private static Integer idController = 1;
 

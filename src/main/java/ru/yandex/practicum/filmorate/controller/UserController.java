@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -47,7 +48,7 @@ public class UserController {
 
     @GetMapping("/users")
     public Collection<User> getAllUsers() {
-        return users.values();
+        return new ArrayList<>(users.values());
     }
 
     public void validate(User user) {
