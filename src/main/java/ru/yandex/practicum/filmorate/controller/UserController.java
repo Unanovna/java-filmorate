@@ -38,7 +38,8 @@ public class UserController {
 
     @SuppressWarnings("checkstyle:LeftCurly")
     @GetMapping("/users")
-    public Collection<User> getAllUsers() { return userService.getAllUsers();
+    public Collection<User> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @PutMapping("/{id}/friends/{friendId}")
