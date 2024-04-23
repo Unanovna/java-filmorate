@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
 import java.util.Collection;
-@SuppressWarnings("checkstyle:EmptyLineSeparator")
+
 @Component
 public interface UserStorage extends FriendStorage {
 
@@ -33,6 +33,8 @@ public interface UserStorage extends FriendStorage {
     @SneakyThrows
     @SuppressWarnings("checkstyle:EmptyLineSeparator")
     User update(@Valid @RequestBody User user);
+
+    @SuppressWarnings("checkstyle:EmptyLineSeparator")
     String delete(int id);
 
     User getById(Integer id);
