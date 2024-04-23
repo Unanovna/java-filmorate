@@ -17,9 +17,7 @@ import java.util.List;
 
 import static sun.security.util.KeyUtil.validate;
 @Component
-
-@SuppressWarnings("checkstyle:WhitespaceAround")
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
     @Getter
     private HashMap<Integer, User> users = new HashMap<>();
 
@@ -50,8 +48,8 @@ public class InMemoryUserStorage implements UserStorage{
     public Collection<User> getAllUsers() {
         return new ArrayList<>(users.values());
     }
-    @SneakyThrows
     @SuppressWarnings("checkstyle:EmptyLineSeparator")
+    @SneakyThrows
     @Override
     public User update(@Valid @RequestBody User user) {
         validate((Key) user);
