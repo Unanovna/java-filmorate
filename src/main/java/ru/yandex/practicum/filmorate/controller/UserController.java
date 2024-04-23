@@ -40,21 +40,21 @@ public class UserController {
     @GetMapping("/users")
     public Collection<User> getAllUsers() { return userService.getAllUsers();
     }
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
+
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.addFriend(id, friendId);
         feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
                 OperationType.ADD, Long.valueOf(friendId));
     }
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
+
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.removeFriend(id, friendId);
         feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
                 OperationType.REMOVE, Long.valueOf(friendId));
     }
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
+
     @GetMapping("/{id}/friends")
     public List<User> getAllFriends(@PathVariable Integer id) {
         return userService.getAllFriends(id);
@@ -64,7 +64,7 @@ public class UserController {
     public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
         return userService.getCommonFriends(id, otherId);
     }
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
+
     public void validate(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             log.trace("email не может быть пустым");
