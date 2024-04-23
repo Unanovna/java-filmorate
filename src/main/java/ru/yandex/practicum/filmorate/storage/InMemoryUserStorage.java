@@ -48,6 +48,7 @@ public class InMemoryUserStorage implements UserStorage {
     public Collection<User> getAllUsers() {
         return new ArrayList<>(users.values());
     }
+
     @SuppressWarnings("checkstyle:EmptyLineSeparator")
     @SneakyThrows
     @Override
