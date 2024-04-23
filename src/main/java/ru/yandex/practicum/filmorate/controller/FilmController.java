@@ -1,62 +1,66 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.OperationType;
+import ru.yandex.practicum.filmorate.service.FeedService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @SuppressWarnings("checkstyle:Regexp")
 @Slf4j
 @RestController
+@RequestMapping("/films")
 public class FilmController {
-    @SuppressWarnings("checkstyle:MemberName")
-    @Getter
-    Map<Integer, Film> films = new HashMap<>();
-    @Getter
-    private static Integer idController = 1;
+    private final FilmService filmService;
+    private final FeedService feedService;
 
-    @SuppressWarnings("checkstyle:WhitespaceAround")
-    @PostMapping("/films")
-    public Film create(@RequestBody Film film) {
-        validate(film);
-        film.setId(idController);
-        if (films.containsValue(film)) {
-            log.trace("Данный Фильм уже содержится в рейтинге");
-            throw new ValidateException("Данный Фильм уже содержится в рейтинге");
-        }
-        films.put(film.getId(), film);
-        generateId();
-        return film;
+    @Autowired
+    public FilmController(FilmService filmService, FeedService feedService) {
+        this.filmService = filmService;
+        this.feedService = feedService;
     }
 
-    @SuppressWarnings("checkstyle:WhitespaceAround")
-    @PutMapping("/films")
-    public Film update(@RequestBody Film film) {
-        validate(film);
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-        } else {
-            log.trace("Обновление невозможно - фильм с указанным id " + film.getId() + " отсутствует в рейтинге");
-            throw new ValidateException("Обновление невозможно - фильм с указанным id " + film.getId() + " отсутствует в рейтинге");
-        }
-        return film;
-    }
-
-    @GetMapping("/films")
+    @GetMapping
     public Collection<Film> getAll() {
-        return new ArrayList<>(films.values());
+        return filmService.getAll();
     }
 
-    public Integer generateId() {
-        idController = films.size() + 1;
-        return idController;
+    @PostMapping
+    public Film create(@Valid @RequestBody Film film) {
+        return filmService.create(film);
+    }
+
+    @PutMapping
+    public Film update(@Valid @RequestBody Film film) {
+        return filmService.update(film);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        filmService.addLike(id, userId);
+        feedService.addFeed(Long.valueOf(userId), EventType.LIKE, OperationType.ADD, Long.valueOf(id));
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        filmService.removeLike(id, userId);
+        feedService.addFeed(Long.valueOf(userId), EventType.LIKE, OperationType.REMOVE, Long.valueOf(id));
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopular(@RequestParam(defaultValue = "10") Integer count,
+                                 @RequestParam(required = false) Integer genreId,
+                                 @RequestParam(required = false) Integer year) {
+        return filmService.getPopular(count, genreId, year);
     }
 
     public void validate(Film film) {

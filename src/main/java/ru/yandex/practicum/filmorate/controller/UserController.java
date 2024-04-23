@@ -1,56 +1,70 @@
 package ru.yandex.practicum.filmorate.controller;
 
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FeedService;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 
 @Slf4j
 @RestController
+@AllArgsConstructor
 public class UserController {
+    private UserService userService;
+    private final FeedService feedService;
 
-    @Getter
-    private HashMap<Integer, User> users = new HashMap<>();
-    @Getter
-    private static Integer idController = 1;
 
     @PostMapping("/users")
     public User create(@Valid @RequestBody User user) {
-        validate(user);
-        user.setId(idController);
-        if (users.containsValue(user)) {
-            log.trace("Данный пользователь уже добавлен в систему");
-            throw new ValidateException("Данный пользователь уже добавлен в систему");
-        }
-        users.put(user.getId(), user);
-        generateId();
-        return user;
+        return userService.addUser(user);
+
     }
 
     @PutMapping("/users")
     public User update(@Valid @RequestBody User user) {
-        validate(user);
-        if (!users.containsKey(user.getId())) {
-            log.trace("Обновление невозможно - пользователь с указанным id " + user.getId() + " отсутствует в системе");
-            throw new ValidateException("Обновление невозможно - пользователь с указанным id " + user.getId() + " отсутствует в системе");
-        }
-        users.put(user.getId(), user);
+        userService.update(user);
         return user;
     }
 
+    @SuppressWarnings("checkstyle:LeftCurly")
     @GetMapping("/users")
-    public Collection<User> getAllUsers() {
-        return new ArrayList<>(users.values());
+    public Collection<User> getAllUsers() { return userService.getAllUsers();
+    }
+    @SuppressWarnings("checkstyle:EmptyLineSeparator")
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.addFriend(id, friendId);
+        feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
+                OperationType.ADD, Long.valueOf(friendId));
+    }
+    @SuppressWarnings("checkstyle:EmptyLineSeparator")
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+        userService.removeFriend(id, friendId);
+        feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
+                OperationType.REMOVE, Long.valueOf(friendId));
+    }
+    @SuppressWarnings("checkstyle:EmptyLineSeparator")
+    @GetMapping("/{id}/friends")
+    public List<User> getAllFriends(@PathVariable Integer id) {
+        return userService.getAllFriends(id);
     }
 
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        return userService.getCommonFriends(id, otherId);
+    }
+    @SuppressWarnings("checkstyle:EmptyLineSeparator")
     public void validate(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             log.trace("email не может быть пустым");
@@ -76,9 +90,5 @@ public class UserController {
             log.trace("вместо имени пользователя будет использоваться логин");
             user.setName(user.getLogin());
         }
-    }
-
-    public Integer generateId() {
-        return ++idController;
     }
 }
