@@ -8,11 +8,11 @@ import java.util.Collection;
 @Component
 public interface FilmStorage extends LikeStorage {
     Film create(Film film);
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
+
     Film update(Film film);
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
+
     Collection<Film> getAll();
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
+
     String delete(int id);
 
     Film getById(Integer id);

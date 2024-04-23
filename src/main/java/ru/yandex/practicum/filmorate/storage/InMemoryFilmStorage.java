@@ -19,7 +19,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     private static Integer idController = 1;
     private Logger log;
 
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
     @Override
     public Film create(Film film) {
         try {
@@ -68,7 +67,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         return null;
     }
 
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
     public Integer generateId() {
         idController = films.size() + 1;
         return idController;

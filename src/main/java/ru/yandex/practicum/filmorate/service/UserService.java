@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
-@SuppressWarnings({"checkstyle:WhitespaceAround", "checkstyle:Regexp"})
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -29,7 +28,6 @@ public class UserService {
         this.userStorage = storage;
     }
 
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
     public User addUser(User user) {
         validate(user, "Форма пользователя заполнена неверно");
         preSave(user);
@@ -52,7 +50,6 @@ public class UserService {
         return result;
     }
 
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
     public void delete(int userId) {
         if (getById(userId) == null) {
             throw new NotFoundException("Пользователь ID = " + userId + " не найден");
