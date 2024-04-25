@@ -61,7 +61,7 @@ public class FilmService {
         return filmStorage.getById(id);
     }
 
-    public void addLike(Integer filmId, Integer userId) {
+    public void addLike(Integer filmId, Long userId) {
         Film film = filmStorage.getById(filmId);
         if (film != null) {
             if (userStorage.getById(userId) != null) {
@@ -75,7 +75,7 @@ public class FilmService {
         }
     }
 
-    public void removeLike(Integer filmId, Integer userId) {
+    public void removeLike(Integer filmId, Long userId) {
         Film film = filmStorage.getById(filmId);
         if (film != null) {
             if (userStorage.getById(userId) != null) {

@@ -25,4 +25,9 @@ public class FeedStorageImpl implements FeedStorage {
     public Optional<Feed> getFeedByTimeStamp(Instant timeStamp) {
         return Optional.empty();
     }
+
+    @Override
+    public void addFeed(Long userId, ru.yandex.practicum.filmorate.model.EventType eventType, OperationType operationType, Long friendId) {
+
+    }
 }

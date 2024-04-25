@@ -11,13 +11,23 @@ public interface UserStorage {
 
     User update(User user);
 
-    String delete(int id);
+    User getById() throws ObjectNotFoundException;
 
-    User getById(Integer id);
+    User getById(Long userId);
 
-    void removeFriend(Integer userId, Integer friendId);
+    void deleteFriend(Long userId, Long friendId);
 
-    boolean containsUser(Integer userId);
+    Collection<User> getFriends(Long userId) throws ObjectNotFoundException;
 
-    void addFriend(Integer userId, Integer friendId);
+    Collection<User> getMutualFriends(Long userId, Long secondUserId) throws ObjectNotFoundException;
+
+    void addFriend(Long userId, Long friendId);
+
+    void isExist(Long userId) throws ObjectNotFoundException;
+
+    String deleteUserById(Long userId);
+
+    default boolean containsUser(Integer userId) {
+        return false;
+    }
 }

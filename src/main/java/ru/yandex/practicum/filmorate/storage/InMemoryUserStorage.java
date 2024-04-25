@@ -14,10 +14,10 @@ import java.util.*;
 @Component
 public class InMemoryUserStorage implements UserStorage {
     @Getter
-    private HashMap<Integer, User> users = new HashMap<>();
+    private HashMap<Long, User> users = new HashMap<Long, User>();
 
     @Getter
-    private static Integer idController = 1;
+    private static Long idController = 1L;
     private Logger log;
 
     @SneakyThrows
@@ -33,7 +33,7 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    public Integer generateId() {
+    public Long generateId() {
         return ++idController;
     }
 
@@ -55,18 +55,12 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public String delete(int id) {
-        return null;
+    public User getById() throws ObjectNotFoundException {
+        return getById(null);
     }
 
-    @Override
-    public User getById(Integer id) {
-        return null;
-    }
-
-    @Override
-    public void removeFriend(Integer userId, Integer friendId) {
-
+    public String deleteUserById(Long userId) {
+        return "Пользователь user_id=" + userId + " успешно удален.";
     }
 
     @Override
@@ -74,8 +68,61 @@ public class InMemoryUserStorage implements UserStorage {
         return false;
     }
 
+    @SneakyThrows
     @Override
-    public void addFriend(Integer userId, Integer friendId) {
+    public User getById(Long userId) {
+        isExist(userId);
+        log.info("Пользователь {} возвращен", users.get(userId));
+        return users.get(userId);
+    }
+
+    @SneakyThrows
+    @Override
+    public void deleteFriend(Long userId, Long friendId) {
+        isExist(userId);
+        isExist(friendId);
+        log.info("Пользователь {} удалил из друзей пользователя {}", users.get(userId), users.get(friendId));
+        users.get(userId).getFriendsList().remove(friendId);
+        users.get(friendId).getFriendsList().remove(userId);
+    }
+
+    @Override
+    public Collection<User> getFriends(Long userId) throws ObjectNotFoundException {
+        isExist(userId);
+        Collection<User> friendsList = new HashSet<>();
+        if (users.get(userId).getFriendsList() != null && users.get(userId).getFriendsList().size() > 0) {
+            for (Long id : users.get(userId).getFriendsList()) {
+                friendsList.add(users.get(id));
+            }
+            log.info("Запрос получения списка друзей пользователя {} выполнен", userId);
+            return friendsList;
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<User> getMutualFriends(Long userId, Long secondUserId) throws ObjectNotFoundException {
+        log.info("Список общих друзей {} и {} отправлен", userId, secondUserId);
+        isExist(userId);
+        isExist(secondUserId);
+        Collection<User> friendsList = new HashSet<>();
+        for (Long id : users.get(userId).getFriendsList()) {
+            if (users.get(secondUserId).getFriendsList().contains(id)) {
+                friendsList.add(users.get(id));
+            }
+        }
+        log.info("Список общих друзей {} и {} отправлен", userId, secondUserId);
+        return friendsList;
+    }
+
+    public void isExist(Long userId) throws ObjectNotFoundException {
+        if (!users.containsKey(userId)) {
+            throw new ObjectNotFoundException("Пользователя с таким " + userId + " не существует");
+        }
+    }
+
+    @Override
+    public void addFriend(Long userId, Long friendId) {
         User user = users.get(userId);
         user.addFriend(friendId);
     }

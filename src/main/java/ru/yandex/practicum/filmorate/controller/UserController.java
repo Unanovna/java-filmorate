@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FeedService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.ObjectNotFoundException;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -43,7 +44,7 @@ public class UserController {
     }
 
     @PutMapping("users/{id}/friends/{friendId}")
-    public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
+    public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
         userService.addFriend(id, friendId);
         feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
                 OperationType.ADD, Long.valueOf(friendId));
@@ -51,14 +52,14 @@ public class UserController {
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
-        userService.removeFriend(id, friendId);
+        userService.deleteFriend(id, friendId);
         feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
                 OperationType.REMOVE, Long.valueOf(friendId));
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getAllFriends(@PathVariable Integer id) {
-        return userService.getAllFriends(id);
+    public List<User> getAllFriends(@PathVariable Long id) throws ObjectNotFoundException {
+        return (List<User>) userService.getFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")

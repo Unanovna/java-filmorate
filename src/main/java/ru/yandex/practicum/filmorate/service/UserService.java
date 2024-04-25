@@ -3,11 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.FriendStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import javax.validation.ValidationException;
 import java.time.LocalDate;
@@ -21,6 +18,7 @@ public class UserService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
     private final FriendStorage friendStorage;
+    private final FeedStorage feedStorage;
     private Integer friendId;
     private Integer userId;
     private String message;
@@ -49,30 +47,28 @@ public class UserService {
         return result;
     }
 
-    public void delete(int userId) {
-        if (getById(userId) == null) {
-            throw new NotFoundException("Пользователь ID = " + userId + " не найден");
-        }
-        log.info("Удаление фильма с id: {}", userId);
-        userStorage.delete(userId);
+
+    public String deleteUserById(Long userId) {
+        return userStorage.deleteUserById(userId);
     }
 
-    public User getById(Integer id) {
-        log.info("Запрошен пользователь с ID = " + id);
-        return userStorage.getById(id);
+    public User getById(Long userId) throws ObjectNotFoundException {
+        return userStorage.getById(userId);
     }
 
-    public void addFriend(Integer userId, Integer friendId) {
+    public void addFriend(Long userId, Long friendId) {
         checkUser(userId, friendId);
         userStorage.addFriend(userId, friendId);
 
         log.info("Друг успешно добавлен");
     }
 
-    public void removeFriend(Integer userId, Integer friendId) {
-        checkUser(userId, friendId);
-        userStorage.removeFriend(userId, friendId);
-        log.info("Друг успешно удален");
+    public Collection<User> getMutualFriends(Long userId, Long secondUserId) throws ObjectNotFoundException {
+        return userStorage.getMutualFriends(userId, secondUserId);
+    }
+
+    public Collection<User> getFriends(Long userId) throws ObjectNotFoundException {
+        return userStorage.getFriends(userId);
     }
 
     public List<User> getCommonFriends(Integer userId, Integer otherUserId) {
@@ -83,14 +79,10 @@ public class UserService {
         return result;
     }
 
-    public List<User> getAllFriends(Integer userId) {
-        containsUser(userId);
-        List<User> result = friendStorage.getFriends(userId);
-        log.info("Friends of user with ID = " + userId + result);
-        return result;
+    private void containsUser(Integer userId) {
     }
 
-    private void checkUser(Integer userId, Integer friendId) {
+    private void checkUser(Long userId, Long friendId) {
         userStorage.getById(userId);
         userStorage.getById(friendId);
     }
@@ -108,9 +100,6 @@ public class UserService {
         }
     }
 
-    private void containsUser(int id) {
-        if (!userStorage.containsUser(id)) {
-            throw new NotFoundException("User with id=" + id + " not exist. ");
-        }
+    public void deleteFriend(Integer id, Integer friendId) {
     }
 }

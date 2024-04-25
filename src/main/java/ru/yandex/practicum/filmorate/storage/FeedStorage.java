@@ -14,4 +14,6 @@ public interface FeedStorage {
     List<Feed> getAllFeedByUserId(Long userId);
 
     Optional<Feed> getFeedByTimeStamp(Instant timeStamp);
+
+    void addFeed(Long userId, ru.yandex.practicum.filmorate.model.EventType eventType, OperationType operationType, Long friendId);
 }
