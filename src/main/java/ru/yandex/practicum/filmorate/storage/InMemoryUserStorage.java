@@ -9,10 +9,7 @@ import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
@@ -39,7 +36,6 @@ public class InMemoryUserStorage implements UserStorage {
     public Integer generateId() {
         return ++idController;
     }
-
 
     @Override
     public Collection<User> getAllUsers() {
@@ -79,27 +75,8 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void addFriend(int userID, int friendId) {
-
-    }
-
-    @Override
-    public void removeFriend(int userID, int friendId) {
-
-    }
-
-    @Override
-    public List<User> getFriends(int userId) {
-        return null;
-    }
-
-    @Override
-    public List<User> getCommonFriends(int friend1, int friend2) {
-        return null;
-    }
-
-    @Override
-    public boolean isFriend(int userId, int friendId) {
-        return false;
+    public void addFriend(Integer userId, Integer friendId) {
+        User user = users.get(userId);
+        user.addFriend(friendId);
     }
 }

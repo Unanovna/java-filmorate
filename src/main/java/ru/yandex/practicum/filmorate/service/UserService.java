@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.ValidationException;
@@ -19,6 +20,7 @@ import java.util.List;
 public class UserService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final FriendStorage friendStorage;
     private Integer friendId;
     private Integer userId;
     private String message;
@@ -28,7 +30,7 @@ public class UserService {
     public User addUser(User user) {
         validate(user, "Форма пользователя заполнена неверно");
         preSave(user);
-        User result = UserStorage.addUser(user);
+        User result = userStorage.addUser(user);
         log.info("Пользователь успешно добавлен: " + user);
         return result;
     }
@@ -76,14 +78,14 @@ public class UserService {
     public List<User> getCommonFriends(Integer userId, Integer otherUserId) {
         containsUser(userId);
         containsUser(otherUserId);
-        List<User> result = userStorage.getCommonFriends(userId, otherUserId);
+        List<User> result = friendStorage.getCommonFriends(userId, otherUserId);
         log.info("Common friends of users with ID " + " {} and {} {} ", userId, otherUserId, result);
         return result;
     }
 
     public List<User> getAllFriends(Integer userId) {
         containsUser(userId);
-        List<User> result = userStorage.getFriends(userId);
+        List<User> result = friendStorage.getFriends(userId);
         log.info("Friends of user with ID = " + userId + result);
         return result;
     }

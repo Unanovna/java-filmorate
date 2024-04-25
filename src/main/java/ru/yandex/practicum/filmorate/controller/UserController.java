@@ -42,7 +42,7 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
+    @PutMapping("users/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.addFriend(id, friendId);
         feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
