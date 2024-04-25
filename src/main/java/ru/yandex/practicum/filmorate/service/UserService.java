@@ -80,6 +80,7 @@ public class UserService {
         log.info("Common friends of users with ID " + " {} and {} {} ", userId, otherUserId, result);
         return result;
     }
+
     public List<User> getAllFriends(Integer userId) {
         containsUser(userId);
         List<User> result = userStorage.getFriends(userId);
