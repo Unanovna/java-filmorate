@@ -5,11 +5,8 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.security.InvalidKeyException;
-import java.security.Key;
 import java.util.*;
 
-import static sun.security.util.KeyUtil.validate;
 @Component
 
 public class InMemoryFilmStorage implements FilmStorage {
@@ -21,11 +18,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film create(Film film) {
-        try {
-            validate((Key) film);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        }
         film.setId(idController);
         if (films.containsValue(film)) {
             log.trace("Данный Фильм уже содержится в рейтинге");
@@ -38,11 +30,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        try {
-            validate((Key) film);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
-        }
         if (films.containsKey(film.getId())) {
             films.put(film.getId(), film);
         } else {

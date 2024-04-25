@@ -9,13 +9,11 @@ import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import static sun.security.util.KeyUtil.validate;
 @Component
 public class InMemoryUserStorage implements UserStorage {
     @Getter
@@ -28,7 +26,6 @@ public class InMemoryUserStorage implements UserStorage {
     @SneakyThrows
     @SuppressWarnings("checkstyle:EmptyLineSeparator")
     public User addUser(User user) {
-        validate((Key) user);
         user.setId(idController);
         if (users.containsValue(user)) {
             log.trace("Данный пользователь уже добавлен в систему");
@@ -53,7 +50,6 @@ public class InMemoryUserStorage implements UserStorage {
     @SneakyThrows
     @Override
     public User update(@Valid @RequestBody User user) {
-        validate((Key) user);
         if (!users.containsKey(user.getId())) {
             log.trace("Обновление невозможно - пользователь с указанным id " + user.getId() + " отсутствует в системе");
             throw new ValidateException("Обновление невозможно - пользователь с указанным id " + user.getId() + " отсутствует в системе");

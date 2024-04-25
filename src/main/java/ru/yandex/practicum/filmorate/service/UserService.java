@@ -1,11 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.ValidationException;
@@ -14,19 +14,16 @@ import java.util.Collection;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class UserService {
-    private static UserStorage userStorage;
+    private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
     private Integer friendId;
     private Integer userId;
     private String message;
     private User user;
 
-    @Autowired
-    public UserService(UserStorage storage) {
-        this.userStorage = storage;
-    }
 
     public User addUser(User user) {
         validate(user, "Форма пользователя заполнена неверно");
@@ -76,18 +73,17 @@ public class UserService {
         log.info("Друг успешно удален");
     }
 
-    public List<User> getAllFriends(Integer userId) {
-        checkUser(userId, userId);
-        List<User> result = (List<User>) userStorage.getFriends(userId);
-        log.info("Друзья пользователя с ID = " + userId + result);
-        return result;
-    }
-
     public List<User> getCommonFriends(Integer userId, Integer otherUserId) {
         containsUser(userId);
         containsUser(otherUserId);
         List<User> result = userStorage.getCommonFriends(userId, otherUserId);
         log.info("Common friends of users with ID " + " {} and {} {} ", userId, otherUserId, result);
+        return result;
+    }
+    public List<User> getAllFriends(Integer userId) {
+        containsUser(userId);
+        List<User> result = userStorage.getFriends(userId);
+        log.info("Friends of user with ID = " + userId + result);
         return result;
     }
 
