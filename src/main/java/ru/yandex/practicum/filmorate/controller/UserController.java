@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controller;
 
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +16,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import javax.validation.Valid;
 import java.util.Collection;
 
-@Slf4j
 @RequestMapping("/users")
 @AllArgsConstructor
 @RestController
