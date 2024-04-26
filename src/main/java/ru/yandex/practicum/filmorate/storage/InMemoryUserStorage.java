@@ -79,6 +79,7 @@ public class InMemoryUserStorage implements UserStorage {
         User friendUser = users.get(friendId);
         log.info("Пользователь {} удалил из друзей пользователя {}", currentUser, friendUser);
         currentUser.removeFriend(friendId);
+        friendUser.removeFriend(userId);
     }
 
     @SneakyThrows
@@ -131,20 +132,15 @@ public class InMemoryUserStorage implements UserStorage {
         isExist(userId);
         isExist(friendId);
         User currentUser = users.get(userId);
+        User friendUser = users.get(friendId);
         if (currentUser.getFriendIds().contains(friendId)) {
             throw new NotFoundException("Пользователь уже добавлен в друзья");
         }
         currentUser.addFriend(friendId);
-        User friendUser = users.get(friendId);
+        friendUser.addFriend(userId);
         log.info("Пользователь {} добавлен в друзья пользователю {}", friendUser, currentUser);
         return friendUser;
     }
-
-
-    //@Override
-    //public void addFriend(Long userId, Long friendId) {
-    //User user = users.get(userId);
-    //user.addFriend(friendId);}
 
     private void validate(User user) {
         if (StringUtils.isEmpty(user.getName())) {

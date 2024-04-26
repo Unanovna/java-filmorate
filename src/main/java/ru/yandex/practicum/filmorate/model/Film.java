@@ -20,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Setter
 public class Film {
-    private Integer id;
+    private Long id;
     @NotBlank(message = "Отсутствует название фильма")
     String name;
     @NotNull

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,17 +19,17 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class InMemoryFilmStorage implements FilmStorage {
 
-    private static Map<Integer, Film> films = new HashMap<>();
-    UserStorage userStorage;
+    private final UserStorage userStorage;
 
-    public static Integer idController = 1;
-    public static int filmId;
+    private final Map<Long, Film> films = new HashMap<>();
+    private Long filmId = 1L;
 
     @Override
     public Film create(Film film) {
-        film.setId(idController);
+        film.setId(generateId());
         if (films.containsValue(film)) {
             log.trace("Данный Фильм уже содержится в рейтинге");
             throw new ValidateException("Данный Фильм уже содержится в рейтинге");
@@ -44,7 +45,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             films.put(film.getId(), film);
         } else {
             log.trace("Обновление невозможно - фильм с указанным id " + film.getId() + " отсутствует в рейтинге");
-            throw new ValidateException("Обновление невозможно - фильм с указанным id " + film.getId() + " отсутствует в рейтинге");
+            throw new NotFoundException("Обновление невозможно - фильм с указанным id " + film.getId() + " отсутствует в рейтинге");
         }
         return film;
     }
@@ -68,12 +69,6 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .sorted((f1, f2) -> f2.getLikesList().size() - f1.getLikesList().size())
                 .limit(count)
                 .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-
-    public static Integer generateId() {
-        idController = films.size() + 1;
-        return idController;
     }
 
     @Override
@@ -101,8 +96,13 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.get(filmId);
     }
 
+    @Override
     public String deleteFilmById(Long filmId) {
         return "Фильм film_id=" + filmId + " успешно удален.";
+    }
+
+    public Long generateId() {
+        return filmId++;
     }
 
     public void validateFilm(Film film) {
