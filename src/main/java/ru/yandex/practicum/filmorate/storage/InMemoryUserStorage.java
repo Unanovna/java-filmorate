@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -27,7 +27,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User createUser(User user) {
         if (users.containsKey(user.getId())) {
-            throw new ObjectAlreadyExistException("Пользователь с такой почтой уже существует");
+            throw new NotFoundException("Пользователь с такой почтой уже существует");
         } else {
             validate(user);
             user.setId(userId++);
@@ -49,7 +49,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User updateUser(User user) {
         isExist(user.getId());
         if (users.get(user.getId()).equals(user)) {
-            throw new ObjectAlreadyExistException(String
+            throw new NotFoundException(String
                     .format("Такой пользователь уже существует c ID = %s", user.getId()));
         }
         log.info("Обновлен пользователь:{}", user);
@@ -121,7 +121,7 @@ public class InMemoryUserStorage implements UserStorage {
     @SneakyThrows
     public void isExist(Long userId) {
         if (!users.containsKey(userId)) {
-            throw new ObjectNotFoundException("Пользователя с таким " + userId + " не существует");
+            throw new NotFoundException("Пользователя с таким " + userId + " не существует");
         }
     }
 
@@ -132,7 +132,7 @@ public class InMemoryUserStorage implements UserStorage {
         isExist(friendId);
         User currentUser = users.get(userId);
         if (currentUser.getFriendIds().contains(friendId)) {
-            throw new ObjectAlreadyExistException("Пользователь уже добавлен в друзья");
+            throw new NotFoundException("Пользователь уже добавлен в друзья");
         }
         currentUser.addFriend(friendId);
         User friendUser = users.get(friendId);
