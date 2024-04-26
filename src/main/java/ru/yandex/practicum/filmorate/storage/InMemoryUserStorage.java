@@ -68,6 +68,11 @@ public class InMemoryUserStorage implements UserStorage {
         return false;
     }
 
+    @Override
+    public List<User> getCommonFriends(int friend1, int friend2) {
+        return null;
+    }
+
     @SneakyThrows
     @Override
     public User getById(Long userId) {

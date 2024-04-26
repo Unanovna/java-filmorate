@@ -1,10 +1,15 @@
 package ru.yandex.practicum.filmorate.service;
 
+import jdk.jfr.Event;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.*;
+import ru.yandex.practicum.filmorate.storage.FeedStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.ObjectNotFoundException;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.ValidationException;
 import java.time.LocalDate;
@@ -17,7 +22,6 @@ import java.util.List;
 public class UserService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
-    private final FriendStorage friendStorage;
     private final FeedStorage feedStorage;
     private Integer friendId;
     private Integer userId;
@@ -63,7 +67,8 @@ public class UserService {
         log.info("Друг успешно добавлен");
     }
 
-    public Collection<User> getMutualFriends(Long userId, Long secondUserId) throws ObjectNotFoundException {
+    @SneakyThrows
+    public Collection<User> getMutualFriends(Long userId, Long secondUserId) {
         return userStorage.getMutualFriends(userId, secondUserId);
     }
 
@@ -71,15 +76,15 @@ public class UserService {
         return userStorage.getFriends(userId);
     }
 
+    private void containsUser(Integer userId) {
+    }
+
     public List<User> getCommonFriends(Integer userId, Integer otherUserId) {
         containsUser(userId);
         containsUser(otherUserId);
-        List<User> result = friendStorage.getCommonFriends(userId, otherUserId);
+        List<User> result = userStorage.getCommonFriends(userId, otherUserId);
         log.info("Common friends of users with ID " + " {} and {} {} ", userId, otherUserId, result);
         return result;
-    }
-
-    private void containsUser(Integer userId) {
     }
 
     private void checkUser(Long userId, Long friendId) {
@@ -101,5 +106,11 @@ public class UserService {
     }
 
     public void deleteFriend(Integer id, Integer friendId) {
+    }
+
+    @SneakyThrows
+    public Collection<Event> getFeedById(Long userId) {
+        userStorage.isExist(userId);
+        return feedStorage.getFeedById(userId);
     }
 }

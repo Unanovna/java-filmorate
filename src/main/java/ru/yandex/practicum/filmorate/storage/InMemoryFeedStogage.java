@@ -10,10 +10,14 @@ import java.util.Collection;
 import java.util.Optional;
 
 @Component
-public interface FeedStorage {
+public class InMemoryFeedStogage implements FeedStorage {
+    @Override
+    public Collection<Event> getFeedById(Long userId) {
+        return null;
+    }
 
-    public Collection<Event> getFeedById(Long userId);
-
-    Optional<Feed> addEvent(Long userId, EventType eventType, OperationType operationType, Long filmId);
-
+    @Override
+    public Optional<Feed> addEvent(Long userId, EventType eventType, OperationType operationType, Long filmId) {
+        return Optional.empty();
+    }
 }

@@ -45,15 +45,14 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable Integer id, @PathVariable Long userId) {
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
         filmService.addLike(id, userId);
-        feedService.addFeed(Long.valueOf(userId), EventType.LIKE, OperationType.ADD, Long.valueOf(id));
+        feedService.addEvent(Long.valueOf(userId), EventType.LIKE, OperationType.ADD, Long.valueOf(id));
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void removeLike(@PathVariable Integer id, @PathVariable Long userId) {
-        filmService.removeLike(id, userId);
-        feedService.addFeed(Long.valueOf(userId), EventType.LIKE, OperationType.REMOVE, Long.valueOf(id));
+    public Film deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+        return filmService.deleteLike(id, userId);
     }
 
     @GetMapping("/popular")

@@ -46,14 +46,14 @@ public class UserController {
     @PutMapping("users/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
         userService.addFriend(id, friendId);
-        feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
+        feedService.addEvent(Long.valueOf(id), EventType.FRIEND,
                 OperationType.ADD, Long.valueOf(friendId));
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.deleteFriend(id, friendId);
-        feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
+        feedService.addEvent(Long.valueOf(id), EventType.FRIEND,
                 OperationType.REMOVE, Long.valueOf(friendId));
     }
 

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -17,17 +17,12 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FilmService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
     private static final LocalDate LIMIT_DATE = LocalDate.from(LocalDateTime.of(1895, 12, 28, 0, 0));
     private static final int LIMIT_LENGTH_OF_DESCRIPTION = 200;
-
-    @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
-        this.userStorage = userStorage;
-        this.filmStorage = filmStorage;
-    }
 
     public Collection<Film> getAll() {
         log.info("Список всех фильмов: " + filmStorage.getAll().size());
@@ -48,20 +43,20 @@ public class FilmService {
         return result;
     }
 
-    public void delete(int filmId) {
+    public void delete(Long filmId) {
         if (getById(filmId) == null) {
             throw new NotFoundException("Фильм с ID = " + filmId + " не найден");
         }
         log.info("Фильм с id: {}", filmId);
-        filmStorage.delete(filmId);
+        filmStorage.deleteFilmById(filmId);
     }
 
-    public Film getById(Integer id) {
+    public Film getById(Long id) {
         log.info("Запрошенный пользователь с ID = " + id);
         return filmStorage.getById(id);
     }
 
-    public void addLike(Integer filmId, Long userId) {
+    public void addLike(Long filmId, Long userId) {
         Film film = filmStorage.getById(filmId);
         if (film != null) {
             if (userStorage.getById(userId) != null) {
@@ -75,18 +70,19 @@ public class FilmService {
         }
     }
 
-    public void removeLike(Integer filmId, Long userId) {
+    public Film deleteLike(Long filmId, Long userId) {
         Film film = filmStorage.getById(filmId);
         if (film != null) {
             if (userStorage.getById(userId) != null) {
-                filmStorage.removeLike(filmId, userId);
-                log.info("Лайк успешно удален");
+                filmStorage.deleteLike(filmId, userId);
+                log.info("Like successfully removed");
             } else {
-                throw new NotFoundException("Пользователь с ID = " + userId + " не найден");
+                throw new NotFoundException("User with ID = " + userId + " not found");
             }
         } else {
-            throw new NotFoundException("Фильм с ID = " + filmId + " не найден");
+            throw new NotFoundException("Movie with ID = " + filmId + " not found");
         }
+        return film;
     }
 
     public List<Film> getPopular(Integer count, Integer genreId, Integer year) {
