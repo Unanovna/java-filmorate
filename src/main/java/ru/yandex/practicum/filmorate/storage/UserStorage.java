@@ -12,7 +12,7 @@ public interface UserStorage {
 
     User updateUser(User user);
 
-    User getById(Long userId);;
+    User getById(Long userId);
 
     void deleteFriend(Long userId, Long friendId);
 
