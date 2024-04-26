@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
@@ -12,13 +13,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
 
     private static Map<Integer, Film> films = new HashMap<>();
     UserStorage userStorage;
 
     public static Integer idController = 1;
-    public static Logger log;
     public static int filmId;
 
     @Override
