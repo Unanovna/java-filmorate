@@ -15,6 +15,7 @@ import java.util.Collection;
 @Slf4j
 @RequestMapping("/users")
 @AllArgsConstructor
+@RestController
 public class UserController {
     private UserService userService;
 
