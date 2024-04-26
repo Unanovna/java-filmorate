@@ -96,17 +96,10 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.get(filmId);
     }
 
-    @Override
-    public List<Film> getFriendsCommonFilms(Long userId, Long friendId) {
-        throw new UnsupportedOperationException("Реализация inMemory метода getFriendsCommonFilms " +
-                "не поддерживается");
-    }
-
     public String deleteFilmById(Long filmId) {
         return "Фильм film_id=" + filmId + " успешно удален.";
     }
 
-    @Override
     public void validateFilm(Film film) {
         if (film == null) {
             throw new NullPointerException("Объект не может быть пустым");

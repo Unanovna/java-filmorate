@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.OperationType;
@@ -30,12 +29,6 @@ public class FeedService {
             log.info("канал добавлен {}", feed.get());
             return Optional.of(feed.get());
         }
-
-    private void containsUser(Integer userId) {
-        if (!userStorage.containsUser(userId)) {
-            throw new NotFoundException(String.format("Пользователь по идентификатору '%d' не найден", userId));
-        }
-    }
 
     @SneakyThrows
     public Collection<Event> getFeedById(Long userId) {

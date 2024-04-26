@@ -1,32 +1,22 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
-import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.OperationType;
-import ru.yandex.practicum.filmorate.service.FeedService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
 
-@SuppressWarnings("checkstyle:Regexp")
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
-    private final FeedService feedService;
-
-    @Autowired
-    public FilmController(FilmService filmService, FeedService feedService) {
-        this.filmService = filmService;
-        this.feedService = feedService;
-    }
 
     @GetMapping
     public Collection<Film> getAll() {
@@ -43,15 +33,24 @@ public class FilmController {
         return filmService.update(film);
     }
 
+    @GetMapping("/{filmId}")
+    public Film getFilmById(@PathVariable Long filmId) {
+        return filmService.getById(filmId);
+    }
+
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
-        filmService.addLike(id, userId);
-        feedService.addEvent(userId, EventType.LIKE, OperationType.ADD, Long.valueOf(id));
+    public Film addLike(@PathVariable Long id, @PathVariable Long userId) {
+        return filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public Film deleteLike(@PathVariable Long id, @PathVariable Long userId) {
         return filmService.deleteLike(id, userId);
+    }
+
+    @DeleteMapping("/{filmId}")
+    public String deleteFilmById(@PathVariable("filmId") Long filmId) {
+        return filmService.deleteFilmById(filmId);
     }
 
     @GetMapping("/popular")

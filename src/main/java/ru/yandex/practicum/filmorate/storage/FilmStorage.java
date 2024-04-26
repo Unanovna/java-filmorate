@@ -22,11 +22,7 @@ public interface FilmStorage {
 
     void isExist(Long filmId);
 
-    void validateFilm(Film film);
-
     String deleteFilmById(Long filmId);
 
     Film deleteLike(Long filmId, Long userId);
-
-    List<Film> getFriendsCommonFilms(Long userId, Long friendId);
 }

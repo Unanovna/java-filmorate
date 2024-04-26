@@ -2,83 +2,68 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.slf4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import javax.validation.Valid;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import static ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage.log;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
     @Getter
-    private HashMap<Long, User> users = new HashMap<Long, User>();
-
-    @Getter
-    private static Long idController = 1L;
-    private Logger log;
+    private HashMap<Long, User> users = new HashMap<>();
+    private static Long userId = 1L;
 
     @SneakyThrows
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
-    public User addUser(User user) {
-        user.setId(idController);
-        if (users.containsValue(user)) {
-            log.trace("Данный пользователь уже добавлен в систему");
-            throw new ValidateException("Данный пользователь уже добавлен в систему");
+    @Override
+    public User createUser(User user) {
+        if (users.containsKey(user.getId()))
+            throw new ObjectAlreadyExistException("Пользователь с такой почтой уже существует");
+        else {
+            validate(user);
+            user.setId(userId++);
+            user.setFriendsList(new HashSet<>());
+            log.info("Добавлен пользователь:{}", user);
+            users.put(user.getId(), user);
+            return user;
         }
-        users.put(user.getId(), user);
-        generateId();
-        return user;
-    }
-
-    public Long generateId() {
-        return ++idController;
     }
 
     @Override
     public Collection<User> getAllUsers() {
-        return new ArrayList<>(users.values());
+        log.info("Текущее количество пользователей: {}", users.size());
+        return users.values();
     }
 
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
     @SneakyThrows
     @Override
-    public User update(@Valid @RequestBody User user) {
-        if (!users.containsKey(user.getId())) {
-            log.trace("Обновление невозможно - пользователь с указанным id " + user.getId() + " отсутствует в системе");
-            throw new ValidateException("Обновление невозможно - пользователь с указанным id " + user.getId() + " отсутствует в системе");
+    public User updateUser(User user) {
+        isExist(user.getId());
+        if (users.get(user.getId()).equals(user)) {
+            throw new ObjectAlreadyExistException(String
+                    .format("Такой пользователь уже существует c ID = %s", user.getId()));
         }
-        users.put(user.getId(), user);
+        log.info("Обновлен пользователь:{}", user);
+        users.replace(user.getId(), user);
         return user;
-    }
-
-    @Override
-    public User getById() throws ObjectNotFoundException {
-        return getById(null);
-    }
-
-    public String deleteUserById(Long userId) {
-        return "Пользователь user_id=" + userId + " успешно удален.";
-    }
-
-    @Override
-    public boolean containsUser(Integer userId) {
-        return false;
-    }
-
-    @Override
-    public List<User> getCommonFriends(int friend1, int friend2) {
-        return null;
     }
 
     @SneakyThrows
     @Override
     public User getById(Long userId) {
+        this.userId = userId;
         isExist(userId);
         log.info("Пользователь {} возвращен", users.get(userId));
         return users.get(userId);
+    }
+
+    public String deleteUserById(Long userId) {
+        return "Пользователь user_id=" + userId + " успешно удален.";
     }
 
     @SneakyThrows
@@ -91,8 +76,9 @@ public class InMemoryUserStorage implements UserStorage {
         users.get(friendId).getFriendsList().remove(userId);
     }
 
+    @SneakyThrows
     @Override
-    public Collection<User> getFriends(Long userId) throws ObjectNotFoundException {
+    public Collection<User> getFriends(Long userId) {
         isExist(userId);
         Collection<User> friendsList = new HashSet<>();
         if (users.get(userId).getFriendsList() != null && users.get(userId).getFriendsList().size() > 0) {
@@ -105,8 +91,9 @@ public class InMemoryUserStorage implements UserStorage {
         return Collections.emptyList();
     }
 
+    @SneakyThrows
     @Override
-    public Collection<User> getMutualFriends(Long userId, Long secondUserId) throws ObjectNotFoundException {
+    public Collection<User> getMutualFriends(Long userId, Long secondUserId) {
         log.info("Список общих друзей {} и {} отправлен", userId, secondUserId);
         isExist(userId);
         isExist(secondUserId);
@@ -120,15 +107,36 @@ public class InMemoryUserStorage implements UserStorage {
         return friendsList;
     }
 
-    public void isExist(Long userId) throws ObjectNotFoundException {
+    @SneakyThrows
+    public void isExist(Long userId) {
         if (!users.containsKey(userId)) {
             throw new ObjectNotFoundException("Пользователя с таким " + userId + " не существует");
         }
     }
 
+    @SneakyThrows
     @Override
-    public void addFriend(Long userId, Long friendId) {
-        User user = users.get(userId);
-        user.addFriend(friendId);
+    public User addFriend(Long userId, Long friendId) {
+        isExist(userId);
+        isExist(friendId);
+        if (users.get(userId).getFriendsList().contains(friendId)) {
+            throw new ObjectAlreadyExistException("Пользователь уже добавлен в друзья");
+        }
+        users.get(userId).getFriendsList().add(friendId);
+        users.get(friendId).getFriendsList().add(userId);
+        log.info("Пользователь {} добавлен в друзья пользователю {}", users.get(userId), users.get(friendId));
+        return users.get(friendId);
+    }
+
+
+    //@Override
+    //public void addFriend(Long userId, Long friendId) {
+        //User user = users.get(userId);
+        //user.addFriend(friendId);}
+
+    private void validate(User user) {
+        if (StringUtils.isEmpty(user.getName())) {
+            user.setName(user.getLogin());
+        }
     }
 }

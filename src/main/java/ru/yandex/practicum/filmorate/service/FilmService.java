@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.OperationType;
@@ -16,7 +15,6 @@ import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -47,12 +45,8 @@ public class FilmService {
         return result;
     }
 
-    public void delete(Long filmId) {
-        if (getById(filmId) == null) {
-            throw new NotFoundException("Фильм с ID = " + filmId + " не найден");
-        }
-        log.info("Фильм с id: {}", filmId);
-        filmStorage.deleteFilmById(filmId);
+    public String deleteFilmById(Long filmId) {
+        return filmStorage.deleteFilmById(filmId);
     }
 
     public Film getById(Long id) {
@@ -78,10 +72,6 @@ public class FilmService {
 
     public Collection<Film> getPopular(Integer count, Long genreId, Integer year) {
         return filmStorage.getPopular(count, genreId, year);
-    }
-
-    public List<Film> getFriendsCommonFilms(Long userId, Long friendId) {
-        return filmStorage.getFriendsCommonFilms(userId, friendId);
     }
 
     protected void validate(Film film, String message) {
