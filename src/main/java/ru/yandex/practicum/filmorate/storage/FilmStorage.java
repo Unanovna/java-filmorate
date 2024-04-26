@@ -16,17 +16,17 @@ public interface FilmStorage {
 
     Film getById(Long id);
 
-    List<Film> getPopular(Integer count);
+    List<Film> getPopular(Integer count, Long genreId, Integer year);
 
     Film addLike(Long filmId, Long userId);
 
     void isExist(Long filmId);
-
-    Film addFilm(Film film);
 
     void validateFilm(Film film);
 
     String deleteFilmById(Long filmId);
 
     Film deleteLike(Long filmId, Long userId);
+
+    List<Film> getFriendsCommonFilms(Long userId, Long friendId);
 }

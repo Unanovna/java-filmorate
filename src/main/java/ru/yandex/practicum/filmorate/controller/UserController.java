@@ -37,7 +37,6 @@ public class UserController {
         return user;
     }
 
-    @SuppressWarnings("checkstyle:LeftCurly")
     @GetMapping("/users")
     public Collection<User> getAllUsers() {
         return userService.getAllUsers();

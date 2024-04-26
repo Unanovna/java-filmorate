@@ -13,7 +13,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
 
 @SuppressWarnings("checkstyle:Regexp")
 @Slf4j
@@ -47,7 +46,7 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable Long id, @PathVariable Long userId) {
         filmService.addLike(id, userId);
-        feedService.addEvent(Long.valueOf(userId), EventType.LIKE, OperationType.ADD, Long.valueOf(id));
+        feedService.addEvent(userId, EventType.LIKE, OperationType.ADD, Long.valueOf(id));
     }
 
     @DeleteMapping("/{id}/like/{userId}")
@@ -56,9 +55,9 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopular(@RequestParam(defaultValue = "10") Integer count,
-                                 @RequestParam(required = false) Integer genreId,
-                                 @RequestParam(required = false) Integer year) {
+    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") Integer count,
+                                       @RequestParam(required = false) Long genreId,
+                                       @RequestParam(required = false) Integer year) {
         return filmService.getPopular(count, genreId, year);
     }
 

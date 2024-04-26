@@ -1,17 +1,20 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.OperationType;
+import ru.yandex.practicum.filmorate.storage.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,6 +24,7 @@ import java.util.List;
 public class FilmService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final FeedStorage feedStorage;
     private static final LocalDate LIMIT_DATE = LocalDate.from(LocalDateTime.of(1895, 12, 28, 0, 0));
     private static final int LIMIT_LENGTH_OF_DESCRIPTION = 200;
 
@@ -56,39 +60,28 @@ public class FilmService {
         return filmStorage.getById(id);
     }
 
-    public void addLike(Long filmId, Long userId) {
-        Film film = filmStorage.getById(filmId);
-        if (film != null) {
-            if (userStorage.getById(userId) != null) {
-                filmStorage.addLike(filmId, userId);
-                log.info("Лайк успешно добавлено");
-            } else {
-                throw new NotFoundException("Пользователь с ID = " + userId + " не найден");
-            }
-        } else {
-            throw new NotFoundException("Фильм с ID = " + filmId + " не найден");
-        }
+    @SneakyThrows
+    public Film addLike(Long filmId, Long userId) {
+        filmStorage.isExist(filmId);
+        userStorage.isExist(userId);
+        feedStorage.addEvent(userId, EventType.LIKE, OperationType.ADD, filmId);
+        return filmStorage.addLike(filmId, userId);
     }
 
+    @SneakyThrows
     public Film deleteLike(Long filmId, Long userId) {
-        Film film = filmStorage.getById(filmId);
-        if (film != null) {
-            if (userStorage.getById(userId) != null) {
-                filmStorage.deleteLike(filmId, userId);
-                log.info("Like successfully removed");
-            } else {
-                throw new NotFoundException("User with ID = " + userId + " not found");
-            }
-        } else {
-            throw new NotFoundException("Movie with ID = " + filmId + " not found");
-        }
-        return film;
+        filmStorage.isExist(filmId);
+        userStorage.isExist(userId);
+        feedStorage.addEvent(userId, EventType.LIKE, OperationType.REMOVE, filmId);
+        return filmStorage.deleteLike(filmId, userId);
     }
 
-    public List<Film> getPopular(Integer count, Integer genreId, Integer year) {
-        List<Film> result = new ArrayList<>(filmStorage.getPopular(count));
-        log.info("Запросил список популярных фильмов");
-        return result;
+    public Collection<Film> getPopular(Integer count, Long genreId, Integer year) {
+        return filmStorage.getPopular(count, genreId, year);
+    }
+
+    public List<Film> getFriendsCommonFilms(Long userId, Long friendId) {
+        return filmStorage.getFriendsCommonFilms(userId, friendId);
     }
 
     protected void validate(Film film, String message) {

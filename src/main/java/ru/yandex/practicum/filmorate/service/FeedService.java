@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.storage.FeedStorage;
@@ -21,7 +22,7 @@ public class FeedService {
     private final FeedStorage feedStorage;
     private final UserStorage userStorage;
 
-    public Optional<Feed> addEvent(Long userId, ru.yandex.practicum.filmorate.model.EventType eventType, OperationType operationType, Long filmId) {
+    public Optional<Feed> addEvent(Long userId, EventType eventType, OperationType operationType, Long filmId) {
             Optional<Feed> feed = feedStorage.addEvent(userId, eventType, operationType, filmId);
             if (feed.isEmpty()) {
                 throw new RuntimeException("Произошла ошибка при добавлении события");

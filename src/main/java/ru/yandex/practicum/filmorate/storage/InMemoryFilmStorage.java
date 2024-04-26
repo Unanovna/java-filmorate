@@ -57,13 +57,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopular(Integer count) {
+    public List<Film> getPopular(Integer count, Long genreId, Integer year) {
         log.info("Возвращено топ {} фильмов", count);
         return getAll().stream()
                 .sorted((f1, f2) -> f2.getLikesList().size() - f1.getLikesList().size())
                 .limit(count)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
+
 
     public static Integer generateId() {
         idController = films.size() + 1;
@@ -95,23 +96,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.get(filmId);
     }
 
-    public String deleteFilmById(Long filmId) {
-        return "Фильм film_id=" + filmId + " успешно удален.";
+    @Override
+    public List<Film> getFriendsCommonFilms(Long userId, Long friendId) {
+        throw new UnsupportedOperationException("Реализация inMemory метода getFriendsCommonFilms " +
+                "не поддерживается");
     }
 
-    @Override
-    public Film addFilm(Film film) {
-        if (film == null) {
-            throw new NullPointerException("Фильм не может быть пустым");
-        }
-        if (films.containsKey(film.getId())) {
-            return update(film);
-        } else {
-            validateFilm(film);
-            film.setId(++filmId);
-            films.put(film.getId(), film);
-            return film;
-        }
+    public String deleteFilmById(Long filmId) {
+        return "Фильм film_id=" + filmId + " успешно удален.";
     }
 
     @Override
