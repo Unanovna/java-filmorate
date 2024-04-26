@@ -3,13 +3,18 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidateException;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.Collection;
 
 @Slf4j
@@ -17,8 +22,8 @@ import java.util.Collection;
 @AllArgsConstructor
 @RestController
 public class UserController {
-    private UserService userService;
 
+    private UserService userService;
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
@@ -51,8 +56,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends/common/{friendId}")
-    public Collection<User> getMutualFriends(@PathVariable Long id, @PathVariable Long friendId) {
-        return userService.getMutualFriends(id, friendId);
+    public Collection<User> getCommonFriends(@PathVariable Long id, @PathVariable Long friendId) {
+        return userService.getCommonFriends(id, friendId);
     }
 
     @GetMapping("/{id}/friends")
@@ -60,36 +65,8 @@ public class UserController {
         return userService.getFriends(id);
     }
 
-
     @DeleteMapping("/{userId}")
     public String deleteUserById(@PathVariable("userId") Long userId) {
         return userService.deleteUserById(userId);
-    }
-
-    public void validate(User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            log.trace("email не может быть пустым");
-            throw new ValidateException("email не может быть пустым");
-        }
-        if (!user.getEmail().contains("@")) {
-            log.trace("email должен содержать символ @");
-            throw new ValidateException("email должен содержать символ @");
-        }
-        if (user.getLogin() == null || user.getLogin().isBlank()) {
-            log.trace("логин не может быть пустым и содержать пробелы");
-            throw new ValidateException("логин не может быть пустым и содержать пробелы");
-        }
-        if (user.getLogin().contains(" ")) {
-            log.trace("логин не может быть пустым и содержать пробелы");
-            throw new ValidateException("логин не может быть пустым и содержать пробелы");
-        }
-        if (user.getBirthday() != null && user.getBirthday().isAfter(LocalDate.now())) {
-            log.trace("дата рождения не может быть в будущем");
-            throw new ValidateException("дата рождения не может быть в будущем");
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            log.trace("вместо имени пользователя будет использоваться логин");
-            user.setName(user.getLogin());
-        }
     }
 }

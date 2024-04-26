@@ -1,6 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -15,25 +19,35 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
+
     @EqualsAndHashCode.Include
-    Long id;
+    private Long id;
+
     private String name;
+
     @NotBlank(message = "Почта не должна быть пустой")
     @Email(message = "Некорректная почта")
-    String email;
+    private String email;
+
     @NotBlank(message = "Логин не должен быть пустой")
-    String login;
+    private String login;
+
     @NotNull
     @PastOrPresent(message = "Некорректная дата рождения")
-    LocalDate birthday;
+    private LocalDate birthday;
+
     private Set<Long> friendIds;
 
     public void addFriend(Long friendId) {
         if (friendIds == null) {
-            friendIds = new HashSet<Long>();
+            friendIds = new HashSet<>();
         }
         friendIds.add(friendId);
     }
 
-    Set<Long> friendsList = new HashSet<>();
+    public void removeFriend(Long friendId) {
+        if (friendId != null) {
+            friendIds.remove(friendId);
+        }
+    }
 }

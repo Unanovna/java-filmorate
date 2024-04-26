@@ -1,33 +1,36 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage.log;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
-    @Getter
-    private HashMap<Long, User> users = new HashMap<>();
+
+    private final Map<Long, User> users = new HashMap<>();
     private static Long userId = 1L;
 
     @SneakyThrows
     @Override
     public User createUser(User user) {
-        if (users.containsKey(user.getId()))
+        if (users.containsKey(user.getId())) {
             throw new ObjectAlreadyExistException("Пользователь с такой почтой уже существует");
-        else {
+        } else {
             validate(user);
             user.setId(userId++);
-            user.setFriendsList(new HashSet<>());
+            user.setFriendIds(new HashSet<>());
             log.info("Добавлен пользователь:{}", user);
             users.put(user.getId(), user);
             return user;
@@ -56,13 +59,13 @@ public class InMemoryUserStorage implements UserStorage {
     @SneakyThrows
     @Override
     public User getById(Long userId) {
-        this.userId = userId;
         isExist(userId);
         log.info("Пользователь {} возвращен", users.get(userId));
         return users.get(userId);
     }
 
     public String deleteUserById(Long userId) {
+        users.remove(userId);
         return "Пользователь user_id=" + userId + " успешно удален.";
     }
 
@@ -71,40 +74,47 @@ public class InMemoryUserStorage implements UserStorage {
     public void deleteFriend(Long userId, Long friendId) {
         isExist(userId);
         isExist(friendId);
-        log.info("Пользователь {} удалил из друзей пользователя {}", users.get(userId), users.get(friendId));
-        users.get(userId).getFriendsList().remove(friendId);
-        users.get(friendId).getFriendsList().remove(userId);
+        User currentUser = users.get(userId);
+        User friendUser = users.get(friendId);
+        log.info("Пользователь {} удалил из друзей пользователя {}", currentUser, friendUser);
+        currentUser.removeFriend(friendId);
     }
 
     @SneakyThrows
     @Override
     public Collection<User> getFriends(Long userId) {
         isExist(userId);
-        Collection<User> friendsList = new HashSet<>();
-        if (users.get(userId).getFriendsList() != null && users.get(userId).getFriendsList().size() > 0) {
-            for (Long id : users.get(userId).getFriendsList()) {
-                friendsList.add(users.get(id));
-            }
-            log.info("Запрос получения списка друзей пользователя {} выполнен", userId);
-            return friendsList;
+        User currentUser = users.get(userId);
+
+        if (CollectionUtils.isEmpty(currentUser.getFriendIds())) {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
+
+        return users.values().stream()
+                .filter(user -> currentUser.getFriendIds().contains(user.getId()))
+                .collect(Collectors.toList());
     }
 
     @SneakyThrows
     @Override
-    public Collection<User> getMutualFriends(Long userId, Long secondUserId) {
-        log.info("Список общих друзей {} и {} отправлен", userId, secondUserId);
+    public Collection<User> getCommonFriends(Long userId, Long secondUserId) {
         isExist(userId);
         isExist(secondUserId);
-        Collection<User> friendsList = new HashSet<>();
-        for (Long id : users.get(userId).getFriendsList()) {
-            if (users.get(secondUserId).getFriendsList().contains(id)) {
-                friendsList.add(users.get(id));
-            }
+
+        Set<Long> firstUserFriends = users.get(userId).getFriendIds();
+        Set<Long> secondUserFriends = users.get(secondUserId).getFriendIds();
+
+        if (CollectionUtils.isEmpty(firstUserFriends) || CollectionUtils.isEmpty(secondUserFriends)) {
+            return Collections.emptyList();
         }
-        log.info("Список общих друзей {} и {} отправлен", userId, secondUserId);
-        return friendsList;
+
+        Set<Long> commonFriendIds = firstUserFriends.stream()
+                .filter(secondUserFriends::contains)
+                .collect(Collectors.toSet());
+
+        return users.values().stream()
+                .filter(user -> commonFriendIds.contains(user.getId()))
+                .collect(Collectors.toList());
     }
 
     @SneakyThrows
@@ -119,20 +129,21 @@ public class InMemoryUserStorage implements UserStorage {
     public User addFriend(Long userId, Long friendId) {
         isExist(userId);
         isExist(friendId);
-        if (users.get(userId).getFriendsList().contains(friendId)) {
+        User currentUser = users.get(userId);
+        if (currentUser.getFriendIds().contains(friendId)) {
             throw new ObjectAlreadyExistException("Пользователь уже добавлен в друзья");
         }
-        users.get(userId).getFriendsList().add(friendId);
-        users.get(friendId).getFriendsList().add(userId);
-        log.info("Пользователь {} добавлен в друзья пользователю {}", users.get(userId), users.get(friendId));
-        return users.get(friendId);
+        currentUser.addFriend(friendId);
+        User friendUser = users.get(friendId);
+        log.info("Пользователь {} добавлен в друзья пользователю {}", friendUser, currentUser);
+        return friendUser;
     }
 
 
     //@Override
     //public void addFriend(Long userId, Long friendId) {
-        //User user = users.get(userId);
-        //user.addFriend(friendId);}
+    //User user = users.get(userId);
+    //user.addFriend(friendId);}
 
     private void validate(User user) {
         if (StringUtils.isEmpty(user.getName())) {
