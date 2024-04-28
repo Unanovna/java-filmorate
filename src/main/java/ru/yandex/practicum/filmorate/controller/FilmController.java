@@ -1,62 +1,63 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidateException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-@SuppressWarnings("checkstyle:Regexp")
 @Slf4j
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/films")
 public class FilmController {
-    @SuppressWarnings("checkstyle:MemberName")
-    @Getter
-    Map<Integer, Film> films = new HashMap<>();
-    @Getter
-    private static Integer idController = 1;
+    private final FilmService filmService;
 
-    @SuppressWarnings("checkstyle:WhitespaceAround")
-    @PostMapping("/films")
-    public Film create(@RequestBody Film film) {
-        validate(film);
-        film.setId(idController);
-        if (films.containsValue(film)) {
-            log.trace("Данный Фильм уже содержится в рейтинге");
-            throw new ValidateException("Данный Фильм уже содержится в рейтинге");
-        }
-        films.put(film.getId(), film);
-        generateId();
-        return film;
-    }
-
-    @SuppressWarnings("checkstyle:WhitespaceAround")
-    @PutMapping("/films")
-    public Film update(@RequestBody Film film) {
-        validate(film);
-        if (films.containsKey(film.getId())) {
-            films.put(film.getId(), film);
-        } else {
-            log.trace("Обновление невозможно - фильм с указанным id " + film.getId() + " отсутствует в рейтинге");
-            throw new ValidateException("Обновление невозможно - фильм с указанным id " + film.getId() + " отсутствует в рейтинге");
-        }
-        return film;
-    }
-
-    @GetMapping("/films")
+    @GetMapping
     public Collection<Film> getAll() {
-        return new ArrayList<>(films.values());
+        return filmService.getAll();
     }
 
-    public Integer generateId() {
-        idController = films.size() + 1;
-        return idController;
+    @PostMapping
+    public Film create(@Valid @RequestBody Film film) {
+        return filmService.create(film);
+    }
+
+    @PutMapping
+    public Film update(@Valid @RequestBody Film film) {
+        return filmService.update(film);
+    }
+
+    @GetMapping("/{filmId}")
+    public Film getFilmById(@PathVariable Long filmId) {
+        return filmService.getById(filmId);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public Film addLike(@PathVariable Long id, @PathVariable Long userId) {
+        return filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public Film deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+        return filmService.deleteLike(id, userId);
+    }
+
+    @DeleteMapping("/{filmId}")
+    public String deleteFilmById(@PathVariable("filmId") Long filmId) {
+        return filmService.deleteFilmById(filmId);
+    }
+
+    @GetMapping("/popular")
+    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") Integer count,
+                                       @RequestParam(required = false) Long genreId,
+                                       @RequestParam(required = false) Integer year) {
+        return filmService.getPopular(count, genreId, year);
     }
 
     public void validate(Film film) {

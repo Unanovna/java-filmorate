@@ -1,0 +1,14 @@
+GET http://localhost:8080/users
+
+###
+
+PUT http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "login": "doloreUpdate",
+  "name": "est adipisicing",
+  "id": 4,
+  "email": "mail@yandex.ru",
+  "birthday": "1976-09-20"
+}
