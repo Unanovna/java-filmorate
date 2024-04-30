@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FeedService {
     private final FeedStorage feedStorage;
-    private final UserStorage userStorage;
+    private final UserStorage userDbStorage;
 
     public Optional<Feed> addEvent(Long userId, EventType eventType, OperationType operationType, Long filmId) {
             Optional<Feed> feed = feedStorage.addEvent(userId, eventType, operationType, filmId);
@@ -32,7 +32,7 @@ public class FeedService {
 
     @SneakyThrows
     public Collection<Event> getFeedById(Long userId) {
-        userStorage.isExist(userId);
+        userDbStorage.isExist(userId);
         return feedStorage.getFeedById(userId);
     }
 }

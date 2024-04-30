@@ -20,7 +20,7 @@ import java.util.Collection;
 @Service
 @RequiredArgsConstructor
 public class FilmService {
-    private final UserStorage userStorage;
+    private final UserStorage userDbStorage;
     private final FilmStorage filmStorage;
     private final FeedStorage feedStorage;
     private static final LocalDate LIMIT_DATE = LocalDate.from(LocalDateTime.of(1895, 12, 28, 0, 0));
@@ -57,7 +57,7 @@ public class FilmService {
     @SneakyThrows
     public Film addLike(Long filmId, Long userId) {
         filmStorage.isExist(filmId);
-        userStorage.isExist(userId);
+        userDbStorage.isExist(userId);
         feedStorage.addEvent(userId, EventType.LIKE, OperationType.ADD, filmId);
         return filmStorage.addLike(filmId, userId);
     }
@@ -65,7 +65,7 @@ public class FilmService {
     @SneakyThrows
     public Film deleteLike(Long filmId, Long userId) {
         filmStorage.isExist(filmId);
-        userStorage.isExist(userId);
+        userDbStorage.isExist(userId);
         feedStorage.addEvent(userId, EventType.LIKE, OperationType.REMOVE, filmId);
         return filmStorage.deleteLike(filmId, userId);
     }
