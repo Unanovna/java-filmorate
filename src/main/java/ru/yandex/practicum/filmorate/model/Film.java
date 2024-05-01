@@ -19,6 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
+@EqualsAndHashCode(of = {"id", "description"})
 public class Film {
     private Long id;
     @NotBlank(message = "Отсутствует название фильма")

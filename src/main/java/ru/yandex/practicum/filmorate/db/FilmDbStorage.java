@@ -76,10 +76,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getById(Long id) {
-        String sqlQuery = "SELECT * FROM films "
-                + "JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id "
-                + "WHERE film_id = ?";
-        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery);
+        String sqlQuery = "SELECT films.*, rating_mpa.*, lks.user_id as l_user_id FROM films films "
+                + "JOIN rating_mpa rating_mpa ON films.rating_id = rating_mpa.rating_id "
+                + "LEFT JOIN likes lks ON films.film_id = lks.film_id "
+                + "WHERE films.film_id = ?";
+        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, id);
         if (srs.next()) {
             return filmMap(srs);
         } else {
@@ -119,7 +120,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film deleteLike(Long filmId, Long userId) {
-        String sqlQuery = "DELETE likes "
+        String sqlQuery = "DELETE from likes "
                 + "WHERE film_id = ? AND user_id = ?";
         jdbcTemplate.update(sqlQuery, filmId, userId);
         return null;
@@ -213,6 +214,7 @@ public class FilmDbStorage implements FilmStorage {
         String mpaName = srs.getString("rating_name");
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
         Set<Genre> genres = getGenres(id);
+        Long lUserId = srs.getLong(9);
         return Film.builder()
                 .id(id)
                 .name(name)
@@ -221,6 +223,7 @@ public class FilmDbStorage implements FilmStorage {
                 .mpa(mpa)
                 .genres(genres)
                 .releaseDate(releaseDate)
+                .likesList(lUserId.equals(0L) ? Collections.emptySet() : Set.of(lUserId))
                 .build();
     }
 }
