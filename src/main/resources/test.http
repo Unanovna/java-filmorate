@@ -68,3 +68,7 @@ Content-Type: application/json
     }
   ]
 }
+###
+PUT http://localhost:8080/films/1/like/2
+###
+GET http://localhost:8080/films/popular?count=1000
