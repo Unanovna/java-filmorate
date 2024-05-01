@@ -21,57 +21,57 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class FilmService {
     private final UserStorage userDbStorage;
-    private final FilmStorage filmStorage;
+    private final FilmStorage filmDbStorage;
     private final FeedStorage feedStorage;
     private static final LocalDate LIMIT_DATE = LocalDate.from(LocalDateTime.of(1895, 12, 28, 0, 0));
     private static final int LIMIT_LENGTH_OF_DESCRIPTION = 200;
 
     public Collection<Film> getAll() {
-        log.info("Список всех фильмов: " + filmStorage.getAll().size());
-        return filmStorage.getAll();
+        log.info("Список всех фильмов: " + filmDbStorage.getAll().size());
+        return filmDbStorage.getAll();
     }
 
     public Film create(Film film) {
         validate(film, "Форма фильма заполнена неверно");
-        Film result = filmStorage.create(film);
+        Film result = filmDbStorage.create(film);
         log.info("Фильм успешно добавлен: " + film);
         return result;
     }
 
     public Film update(Film film) {
         validate(film, "Форма обновления фильма заполнена неверно");
-        Film result = filmStorage.update(film);
+        Film result = filmDbStorage.update(film);
         log.info("Фильм успешно обновлен" + film);
         return result;
     }
 
     public String deleteFilmById(Long filmId) {
-        return filmStorage.deleteFilmById(filmId);
+        return filmDbStorage.deleteFilmById(filmId);
     }
 
     public Film getById(Long id) {
         log.info("Запрошенный пользователь с ID = " + id);
-        return filmStorage.getById(id);
+        return filmDbStorage.getById(id);
     }
 
     @SneakyThrows
     public Film addLike(Long filmId, Long userId) {
-        filmStorage.isExist(filmId);
+        filmDbStorage.isExist(filmId);
         userDbStorage.isExist(userId);
         feedStorage.addEvent(userId, EventType.LIKE, OperationType.ADD, filmId);
-        return filmStorage.addLike(filmId, userId);
+        return filmDbStorage.addLike(filmId, userId);
     }
 
     @SneakyThrows
     public Film deleteLike(Long filmId, Long userId) {
-        filmStorage.isExist(filmId);
+        filmDbStorage.isExist(filmId);
         userDbStorage.isExist(userId);
         feedStorage.addEvent(userId, EventType.LIKE, OperationType.REMOVE, filmId);
-        return filmStorage.deleteLike(filmId, userId);
+        return filmDbStorage.deleteLike(filmId, userId);
     }
 
     public Collection<Film> getPopular(Integer count, Long genreId, Integer year) {
-        return filmStorage.getPopular(count, genreId, year);
+        return filmDbStorage.getPopular(count, genreId, year);
     }
 
     protected void validate(Film film, String message) {

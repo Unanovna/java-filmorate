@@ -31,4 +31,25 @@ public class Film {
     @Positive(message = "Продолжительность фильма не может быть отрицательной")
     Long duration;
     Set<Long> likesList = new HashSet<>();
+
+    private Set<Genre> genres = new HashSet<>();
+
+    private RatingMpa mpa;
+
+
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
+
+    public void removeAllGenres() {
+        genres.clear();
+    }
+
+    public void removeGenre(Genre genre) {
+        genres.remove(genre);
+    }
+
+    public int getLikesCount() {
+        return likesList.size();
+    }
 }
