@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.BuildException;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.OperationType;
@@ -33,7 +35,12 @@ public class FilmService {
 
     public Film create(Film film) {
         validate(film, "Форма фильма заполнена неверно");
-        Film result = filmDbStorage.create(film);
+        Film result;
+        try {
+            result = filmDbStorage.create(film);
+        } catch (DataIntegrityViolationException e) {
+            throw new BuildException(e.getMessage());
+        }
         log.info("Фильм успешно добавлен: " + film);
         return result;
     }

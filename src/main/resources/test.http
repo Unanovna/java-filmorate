@@ -12,3 +12,19 @@ Content-Type: application/json
   "email": "mail@yandex.ru",
   "birthday": "1976-09-20"
 }
+
+###
+PUT http://localhost:8080/users/6/friends/8
+###
+POST http://localhost:8080/films
+Content-Type: application/json
+
+{
+  "name": "Name",
+  "description": "Descrition",
+  "releaseDate": "1980-03-25",
+  "duration": 200,
+  "mpa": {
+    "id": 10
+  }
+}
