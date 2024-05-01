@@ -138,7 +138,6 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "INSERT INTO friends (user_id, friend_id, status) "
                 + "VALUES(?, ?, ?)";
         jdbcTemplate.update(sqlQuery, userId, friendId, true);
-        jdbcTemplate.update(sqlQuery, friendId, userId, true);
         return null;
     }
 
