@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -111,7 +112,8 @@ public class FilmDbStorage implements FilmStorage {
             }
             film.setLikesList(set);
         });
-        return films;
+        return films.stream().sorted(Comparator.comparing(Film::getLikesCount).reversed())
+                .collect(Collectors.toList());
     }
 
     @Override

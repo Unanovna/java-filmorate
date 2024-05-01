@@ -56,6 +56,6 @@ Content-Type: application/json
 
 {"name":"vlvIND4xGfC0781","description":"GIRfAYKOePMjxabFRmNJ9gF91D5QuxY4gSH0QEOQg1yF6BwbGK","releaseDate":"1993-08-17","duration":142,"mpa":{"id":4},"genres":[{"id":3},{"id":5}]}
 ###
-PUT http://localhost:8080/films/1/like/2
+PUT http://localhost:8080/films/1/like/1
 ###
 GET http://localhost:8080/films/popular?count=1000
