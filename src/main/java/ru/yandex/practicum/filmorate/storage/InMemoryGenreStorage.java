@@ -10,8 +10,7 @@ import java.util.List;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-@SuppressWarnings("checkstyle:WhitespaceAround")
-public class InMemoryGenreStorage implements GenreStorage{
+public class InMemoryGenreStorage implements GenreStorage {
     @Override
     public void deleteAllGenresById(int filmId) {
     }
