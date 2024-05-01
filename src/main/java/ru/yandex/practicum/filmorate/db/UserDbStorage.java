@@ -10,7 +10,13 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 @Repository
 @Primary
@@ -40,11 +46,20 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Collection<User> getAllUsers() {
         String sqlQuery = "SELECT * FROM users";
+        String friendsQuery = "SELECT * FROM friends where user_id = ?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery);
         List<User> users = new ArrayList<>();
         while (srs.next()) {
             users.add(userMap(srs));
         }
+        users.forEach(user -> {
+            SqlRowSet friendsSrs = jdbcTemplate.queryForRowSet(friendsQuery, user.getId());
+            Set<Long> friendsIds = new HashSet<>();
+            while (friendsSrs.next()) {
+                friendsIds.add(friendsSrs.getLong(1));
+            }
+            user.setFriendIds(friendsIds);
+        });
         return users;
     }
 
@@ -88,10 +103,19 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "SELECT * FROM users "
                 + "WHERE users.user_id IN (SELECT friend_id from friends "
                 + "WHERE user_id = ?)";
+        String friendsQuery = "SELECT * FROM friends where user_id = ?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId);
         while (srs.next()) {
             friends.add(UserDbStorage.userMap(srs));
         }
+        friends.forEach(user -> {
+            SqlRowSet friendsSrs = jdbcTemplate.queryForRowSet(friendsQuery, user.getId());
+            Set<Long> friendsIds = new HashSet<>();
+            while (friendsSrs.next()) {
+                friendsIds.add(friendsSrs.getLong(1));
+            }
+            user.setFriendIds(friendsIds);
+        });
         return friends;
     }
 
@@ -114,6 +138,7 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "INSERT INTO friends (user_id, friend_id, status) "
                 + "VALUES(?, ?, ?)";
         jdbcTemplate.update(sqlQuery, userId, friendId, true);
+        jdbcTemplate.update(sqlQuery, friendId, userId, true);
         return null;
     }
 
