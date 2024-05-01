@@ -51,6 +51,6 @@ public class Film {
     }
 
     public int getLikesCount() {
-        return likesList.size();
+        return likesList == null ? 0 : likesList.size();
     }
 }

@@ -71,7 +71,7 @@ public class FilmDbStorage implements FilmStorage {
                 + "LEFT JOIN film_genres ON film_genres.film_id = films.film_id "
                 + "LEFT JOIN genres ON genres.genre_id = film_genres.genre_id";
         List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm);
-        return addGenreForList(films);
+        return films;
     }
 
     @Override
@@ -124,21 +124,6 @@ public class FilmDbStorage implements FilmStorage {
                 + "WHERE film_id = ? AND user_id = ?";
         jdbcTemplate.update(sqlQuery, filmId, userId);
         return null;
-    }
-
-    private List<Film> addGenreForList(List<Film> films) {
-        Map<Long, Film> filmsTable = films.stream().collect(Collectors.toMap(Film::getId, film -> film));
-        String inSql = String.join(", ", Collections.nCopies(filmsTable.size(), "?"));
-        final String sqlQuery = "SELECT * "
-                + "FROM film_genres "
-                + "LEFT OUTER JOIN genres ON film_genres.genre_id = genres.genre_id "
-                + "WHERE film_genres.film_id IN (" + inSql + ") "
-                + "ORDER BY film_genres.genre_id";
-        jdbcTemplate.query(sqlQuery, (rs) -> {
-            filmsTable.get(rs.getInt("film_id")).addGenre(new Genre(rs.getInt("genre_id"),
-                    rs.getString("genre_name")));
-        }, filmsTable.keySet().toArray());
-        return films;
     }
 
     private Film makeFilm(ResultSet rs, int id) throws SQLException {

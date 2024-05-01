@@ -99,6 +99,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Collection<User> getFriends(Long userId) {
+        getById(userId);
         List<User> friends = new ArrayList<>();
         String sqlQuery = "SELECT * FROM users "
                 + "WHERE users.user_id IN (SELECT friend_id from friends "
