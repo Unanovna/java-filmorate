@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.BuildException;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.storage.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -16,7 +17,10 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
 
 @Slf4j
 @Service
@@ -42,6 +46,11 @@ public class FilmService {
             throw new BuildException(e.getMessage());
         }
         log.info("Фильм успешно добавлен: " + film);
+        if (result.getGenres() != null) {
+            ArrayList<Genre> genres = new ArrayList<>(result.getGenres());
+            genres.sort(Comparator.comparing(Genre::getId));
+            result.setGenres(new HashSet<>(genres));
+        }
         return result;
     }
 
