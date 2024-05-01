@@ -54,20 +54,7 @@ GET http://localhost:8080/films
 POST http://localhost:8080/films
 Content-Type: application/json
 
-{
-  "name": "zKbvrrissiqUa3QDH",
-  "description": "d",
-  "releaseDate": "2002-06-17",
-  "duration": 61,
-  "mpa": {
-    "id": 4
-  },
-  "genres": [
-    {
-      "id": 1
-    }
-  ]
-}
+{"name":"vlvIND4xGfC0781","description":"GIRfAYKOePMjxabFRmNJ9gF91D5QuxY4gSH0QEOQg1yF6BwbGK","releaseDate":"1993-08-17","duration":142,"mpa":{"id":4},"genres":[{"id":3},{"id":5}]}
 ###
 PUT http://localhost:8080/films/1/like/2
 ###

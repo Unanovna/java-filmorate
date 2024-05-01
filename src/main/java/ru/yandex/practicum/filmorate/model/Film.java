@@ -1,6 +1,13 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -33,6 +40,7 @@ public class Film {
     Long duration;
     Set<Long> likesList = new HashSet<>();
 
+    @JsonPropertyOrder({"id"})
     private Set<Genre> genres = new HashSet<>();
 
     private RatingMpa mpa;
