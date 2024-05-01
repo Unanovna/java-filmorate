@@ -99,13 +99,19 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getPopular(Integer count, Long genreId, Integer year) {
         String sqlQuery = "SELECT * FROM films "
-                + "LEFT JOIN likes ON likes.film_id = films.film_id "
                 + "JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id "
-                + "GROUP BY films.film_id, LIKES.USER_ID "
-                + "ORDER BY COUNT (likes.film_id) ASC "
-                + "LIMIT "
-                + count;
-        return jdbcTemplate.query(sqlQuery, this::makeFilm);
+                + "LEFT JOIN film_genres ON film_genres.film_id = films.film_id "
+                + "LEFT JOIN genres ON genres.genre_id = film_genres.genre_id limit " + count;
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::makeFilm);
+        films.forEach(film -> {
+            SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("select * from likes where film_id = ?", film.getId());
+            Set<Long> set = new HashSet<>();
+            while (sqlRowSet.next()) {
+                set.add(sqlRowSet.getLong(2));
+            }
+            film.setLikesList(set);
+        });
+        return films;
     }
 
     @Override
