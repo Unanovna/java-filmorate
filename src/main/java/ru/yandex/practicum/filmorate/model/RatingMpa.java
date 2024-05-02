@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import javax.validation.constraints.Positive;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class RatingMpa {
 
     @Positive

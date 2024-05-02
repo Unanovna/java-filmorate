@@ -89,12 +89,35 @@ public class FilmDbStorage implements FilmStorage {
                 + "JOIN rating_mpa rating_mpa ON films.rating_id = rating_mpa.rating_id "
                 + "LEFT JOIN likes lks ON films.film_id = lks.film_id "
                 + "WHERE films.film_id = ?";
-        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, id);
-        if (srs.next()) {
-            return filmMap(srs);
-        } else {
-            throw new NotFoundException("Movie with ID = " + id + " not found");
-        }
+
+        return jdbcTemplate.query(sqlQuery, rs -> {
+            Film.FilmBuilder builder = null;
+            Set<Long> likeList = new HashSet<>();
+            while (rs.next()) {
+                Long likeUserId = rs.getObject(9, Long.class);
+                if (likeUserId != null) {
+                    likeList.add(likeUserId);
+                }
+                if (builder == null) {
+                    builder = Film.builder()
+                            .id(rs.getLong(1))
+                            .name(rs.getString(2))
+                            .description(rs.getString(3))
+                            .duration(rs.getLong(4))
+                            .releaseDate(rs.getTimestamp(5).toLocalDateTime().toLocalDate())
+                            .mpa(RatingMpa.builder()
+                                    .id(rs.getInt(6))
+                                    .name(rs.getString(8)).build())
+                            .likesList(likeList);
+                }
+            }
+
+            if (builder == null) {
+                throw new NotFoundException("Movie with ID = " + id + " not found");
+            }
+
+            return builder.build();
+        }, id);
     }
 
     @Override
@@ -126,6 +149,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void isExist(Long filmId) {
+        getById(filmId);
     }
 
     @Override
