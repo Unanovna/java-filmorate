@@ -85,19 +85,31 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getById(Long id) {
-        String sqlQuery = "SELECT films.*, rating_mpa.*, lks.user_id as l_user_id FROM films films "
-                + "JOIN rating_mpa rating_mpa ON films.rating_id = rating_mpa.rating_id "
+        String sqlQuery = "SELECT films.*, rating_mpa.*, lks.user_id as l_user_id, g.* FROM films films "
+                + "LEFT JOIN rating_mpa rating_mpa ON films.rating_id = rating_mpa.rating_id "
+                + "LEFT JOIN film_genres fg ON fg.film_id = films.film_id "
+                + "LEFT JOIN genres g ON g.genre_id = fg.genre_id "
                 + "LEFT JOIN likes lks ON films.film_id = lks.film_id "
                 + "WHERE films.film_id = ?";
 
         return jdbcTemplate.query(sqlQuery, rs -> {
             Film.FilmBuilder builder = null;
             Set<Long> likeList = new HashSet<>();
+            Set<Genre> genres = new HashSet<>();
             while (rs.next()) {
+                Integer genreId = rs.getObject(10, Integer.class);
+                if (genreId != null) {
+                    genres.add(Genre.builder()
+                            .id(genreId)
+                            .name(rs.getObject(11, String.class))
+                            .build());
+                }
+
                 Long likeUserId = rs.getObject(9, Long.class);
                 if (likeUserId != null) {
                     likeList.add(likeUserId);
                 }
+
                 if (builder == null) {
                     builder = Film.builder()
                             .id(rs.getLong(1))
@@ -108,7 +120,8 @@ public class FilmDbStorage implements FilmStorage {
                             .mpa(RatingMpa.builder()
                                     .id(rs.getInt(6))
                                     .name(rs.getString(8)).build())
-                            .likesList(likeList);
+                            .likesList(likeList)
+                            .genres(genres);
                 }
             }
 
