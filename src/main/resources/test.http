@@ -12,3 +12,74 @@ Content-Type: application/json
   "email": "mail@yandex.ru",
   "birthday": "1976-09-20"
 }
+
+###
+PUT http://localhost:8080/users/6/friends/8
+
+###
+POST http://localhost:8080/films
+Content-Type: application/json
+
+{
+  "name": "Name",
+  "description": "Descrition",
+  "releaseDate": "1980-03-25",
+  "duration": 200,
+  "mpa": {
+    "id": 10
+  }
+}
+
+###
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "name": "Molly oysle",
+  "login": "APbUecrJ4A",
+  "email": "Stefsaie_Farrell74@gmail.com",
+  "birthday": "2000-06-05"
+}
+
+###
+PUT http://localhost:8080/users/1/friends/2
+
+###
+GET http://localhost:8080/users/1/friends
+
+###
+GET http://localhost:8080/films/1
+
+###
+GET http://localhost:8080/films
+
+###
+POST http://localhost:8080/films
+Content-Type: application/json
+
+{
+  "name": "vlvIND4xGfC0781",
+  "description": "GIRfAYKOePMjxabFRmNJ9gF91D5QuxY4gSH0QEOQg1yF6BwbGK",
+  "releaseDate": "1993-08-17",
+  "duration": 142,
+  "mpa": {
+    "id": 4
+  },
+  "genres": [
+    {
+      "id": 1
+    },
+    {
+      "id": 1
+    },
+    {
+      "id": 3
+    }
+  ]
+}
+###
+PUT http://localhost:8080/films/1/like/2
+###
+GET http://localhost:8080/films/popular?count=1000
+###
+GET http://localhost:8080/mpa/66

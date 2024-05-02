@@ -14,46 +14,46 @@ import java.util.Collection;
 @Slf4j
 public class UserService {
 
-    private final UserStorage userStorage;
+    private final UserStorage userDbStorage;
 
     public User createUser(User user) {
-        return userStorage.createUser(user);
+        return userDbStorage.createUser(user);
     }
 
     public Collection<User> getAllUsers() {
-        Collection<User> allUsers = userStorage.getAllUsers();
+        Collection<User> allUsers = userDbStorage.getAllUsers();
         log.info("Список всех пользователей: {}", allUsers.size());
         return allUsers;
     }
 
     public User updateUser(User user) {
-        return userStorage.updateUser(user);
+        return userDbStorage.updateUser(user);
     }
 
     public String deleteUserById(Long userId) {
-        return userStorage.deleteUserById(userId);
+        return userDbStorage.deleteUserById(userId);
     }
 
     public User getById(Long userId) {
-        return userStorage.getById(userId);
+        return userDbStorage.getById(userId);
     }
 
     @SneakyThrows
     public User addFriend(Long userId, Long friendId) {
-        return userStorage.addFriend(userId, friendId);
+        return userDbStorage.addFriend(userId, friendId);
     }
 
     @SneakyThrows
     public Collection<User> getCommonFriends(Long userId, Long secondUserId) {
-        return userStorage.getCommonFriends(userId, secondUserId);
+        return userDbStorage.getCommonFriends(userId, secondUserId);
     }
 
     public Collection<User> getFriends(Long userId) {
-        return userStorage.getFriends(userId);
+        return userDbStorage.getFriends(userId);
     }
 
     @SneakyThrows
     public void deleteFriend(Long userId, Long friendId) {
-        userStorage.deleteFriend(userId, friendId);
+        userDbStorage.deleteFriend(userId, friendId);
     }
 }
