@@ -206,15 +206,15 @@ public class FilmDbStorage implements FilmStorage {
         }
         String sqlQuery = "INSERT INTO film_genres (film_id, genre_id) "
                 + "VALUES (?, ?)";
-        List<Genre> genresTable = new ArrayList<>(genres);
+        List<Integer> genreIds = genres.stream().map(Genre::getId).distinct().collect(Collectors.toList());
         this.jdbcTemplate.batchUpdate(sqlQuery, new BatchPreparedStatementSetter() {
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setInt(1, filmId);
-                ps.setInt(2, genresTable.get(i).getId());
+                ps.setInt(2, genreIds.get(i));
             }
 
             public int getBatchSize() {
-                return genresTable.size();
+                return genreIds.size();
             }
         });
     }
