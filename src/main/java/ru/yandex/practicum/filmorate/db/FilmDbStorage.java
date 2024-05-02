@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -95,7 +94,7 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, rs -> {
             Film.FilmBuilder builder = null;
             Set<Long> likeList = new HashSet<>();
-            Set<Genre> genres = new HashSet<>();
+            List<Genre> genres = new ArrayList<>();
             while (rs.next()) {
                 Integer genreId = rs.getObject(10, Integer.class);
                 if (genreId != null) {
@@ -188,7 +187,7 @@ public class FilmDbStorage implements FilmStorage {
         int mpaId = rs.getInt("rating_id");
         String mpaName = rs.getString("rating_name");
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
-        Set<Genre> genres = new HashSet<>();
+        List<Genre> genres = new ArrayList<>();
         return Film.builder()
                 .id(filmId)
                 .name(name)
@@ -200,7 +199,7 @@ public class FilmDbStorage implements FilmStorage {
                 .build();
     }
 
-    public void addGenre(int filmId, Set<Genre> genres) {
+    public void addGenre(int filmId, List<Genre> genres) {
         deleteAllGenresById(filmId);
         if (genres == null || genres.isEmpty()) {
             return;
@@ -220,14 +219,14 @@ public class FilmDbStorage implements FilmStorage {
         });
     }
 
-    private Set<Genre> getGenres(long filmId) {
+    private List<Genre> getGenres(long filmId) {
         Comparator<Genre> compId = Comparator.comparing(Genre::getId);
-        Set<Genre> genres = new TreeSet<>(compId);
+        List<Genre> genres = new ArrayList<>();
         String sqlQuery = "SELECT film_genres.genre_id, genres.genre_name FROM film_genres "
                 + "JOIN genres ON genres.genre_id = film_genres.genre_id "
                 + "WHERE film_id = ? ORDER BY genre_id ASC";
         genres.addAll(jdbcTemplate.query(sqlQuery, this::makeGenre, filmId));
-        return genres;
+        return genres.stream().sorted(compId).collect(Collectors.toList());
     }
 
     private void deleteAllGenresById(int filmId) {
@@ -251,7 +250,7 @@ public class FilmDbStorage implements FilmStorage {
         int mpaId = srs.getInt("rating_id");
         String mpaName = srs.getString("rating_name");
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
-        Set<Genre> genres = getGenres(id);
+        List<Genre> genres = getGenres(id);
         Long lUserId = srs.getLong(9);
         return Film.builder()
                 .id(id)
